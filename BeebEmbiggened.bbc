@@ -1,0 +1,45 @@
+ASMINIT=&2400
+MAKEGRID=&2560
+MODE 1:VDU 23;8202;0;0;0;
+PROCinit
+PROCfaults(faults%)
+PROClevels
+PROCdraw
+R%=TIME-R%
+PRINT"Total time ";R%/100;"s"
+END
+DEFPROCinit
+*LOAD "CORE"
+REM: RND(ABS TIME):REM Seed random number generator
+R%=TIME
+S%=40
+faults%=50
+DIM l0 S%*2+1:DIM l1 S%*2+1
+DIM fac1 faults%*2
+DIM dx faults%:DIM dy faults%:DIM ft faults%
+VDU 19,3,4;0;
+ENDPROC
+DEFPROCfaults(num%)
+totadd=0
+FOR F%=0 TO num%-1
+PRINT TAB(0,0);num%-F%;" "
+p1x%=RND(S%):p1y%=RND(S%)
+p2x%=RND(S%):p2y%=RND(S%)
+dx%=p2x%-p1x%:dy%=p2y%-p1y%
+tmp%=dx%*p1y%-dy%*p1x%
+fac1?(F%*2)=tmp%AND&FF:fac1?(F%*2+1)=(tmp%AND&FF00)DIV&FF
+dx?F%=dx%:dy?F%=dy%
+ft?F%=RND MOD256
+REM TODO estimate of total height change
+NEXT
+CALL ASMINIT,?faults%,?S%,?fac1,?dx,?dy,?ft
+ENDPROC
+ENDPROC
+DEFPROClevels
+base=-400:REM Better estimate would be nice
+water=totadd/(S%*S%)
+ENDPROC
+DEFPROCdraw
+CLS
+CALL MAKEGRID,?l0,?l1
+ENDPROC

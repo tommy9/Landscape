@@ -1,0 +1,363 @@
+10 REM >BeebScape
+20 REM By David Lawrence
+30 REM For BBC B/B+/M/C/E/A
+40 REM (C) BBC Acorn User Sep 1989
+50 :
+60 MODE 1:VDU 23;8202;0;0;0;
+70 PROCinit
+80 PROCfaults(faults)
+90 PROClevels
+100 PROCdraw
+110 END
+120 :
+130 DEF PROCinit
+140 size% = 10
+150 xscale% = 64
+160 yscale% = 32
+170 zscale% = 4
+180 circular = TRUE
+190 linear = FALSE
+200 faults = 50
+210 delta = 3
+220 :
+230 DIM land(size%,size%)
+240 DIM s%(2),x%(2),y%(2),height(3)
+250 VDU 19,3,4;0;
+260 black=0
+270 blue=3
+280 ENDPROC
+290 :
+300 DEF PROCfaults(num%)
+310 FOR i%=1 TO num%
+320 PRINT TAB(0,0);"Faults left:";num%-i%;" "
+330 IF circular PROCcircle
+340 IF linear PROCline
+350 NEXT
+360 ENDPROC
+370 :
+380 DEF PROCcircle
+390 x%=RND(size%)-1
+400 y%=RND(size%)-1
+410 r%=(RND(size%)-1)^2
+420 add=SGNRND*RND(1)*delta
+430 FOR X%=0 TO size%
+440 dx=(X%-x%)^2
+450 IF dx<r% PROCdocirc
+460 NEXT
+470 ENDPROC
+480 :
+490 DEF PROCdocirc
+500 dy=SQR(r%-dx)
+510 y1=y%-dy
+520 y2=y%+dy
+530 IF y1<0 y1=0
+540 IF y2>=size% y2=size%-1
+550 FOR Y%=y1 TO y2
+560 land(X%,Y%)=land(X%,Y%)+add
+570 NEXT
+580 ENDPROC
+590 :
+600 DEF PROCline
+610 REPEAT
+620 s%(1)=RND(4):s%(2)=RND(4)
+630 UNTIL s%(1)<>s%(2)
+640 REPEAT
+650 FOR J%=1 TO 2
+660 IF s%(J%)=1 x%(J%)=0: y%(J%)=RND(size%)-1
+670 IF s%(J%)=2 x%(J%)=RND(size%)-1: y%(J%)=size%
+680 IF s%(J%)=3 x%(J%)=size%: y%(J%)=RND(size%)-1
+690 IF s%(J%)=4 x%(J%)=RND(size%)-1: y%(J%)=0
+700 NEXT
+710 UNTIL x%(1)<>x%(2) AND y%(1)<>y%(2)
+720 M=(y%(2)-y%(1))/(x%(2)-x%(1))
+730 C=y%(1)-M*x%(1)
+740 add=SGNRND*RND(1)*delta
+750 FOR X%=0 TO size%
+760 Y%=M*X%+C
+770 IF Y%<0 Y%=0
+780 IF Y%<=size% PROCdoline
+790 NEXT
+800 ENDPROC
+810 :
+820 PROCdoline
+830 FOR y%=Y% TO size%
+840 land(X%,y%)=land(X%,y%)+add
+850 NEXT
+860 ENDPROC
+870 :
+880 DEF PROClevels
+890 base=0
+900 peak=0
+910 aver=0
+920 land(size%,size%)=land(size%-1,size%-1)
+930 FOR X%=0 TO size%-1
+940 land(X%,size%)=land(X%,size%-1)
+950 land(size%,X%)=land(size%-1,X%)
+960 aver=aver+land(X%,size%)+land(size%,X%)
+970 FOR Y%=0 TO size%-1
+980 aver=aver+land(X%,Y%)
+990 av=(land(X%,Y%)+land(X%+1,Y%)+land(X%+1,Y%+1)+land(X%,Y%+1))/4
+1000 IF av<base base=av
+1010 IF av>peak peak=av
+1020 NEXT
+1030 NEXT
+1040 water=aver/(size%*size%)
+1050 ENDPROC
+1060 :
+1070 DEF PROCdraw
+1080 CLS
+1090 col%=1
+1100 FOR I%=0 TO size%-1
+1110 FOR J%=0 TO size%-1
+1120 PROCpatch(I%,J%)
+1130 IF I%=size%-1 PROCside(col%)
+1140 col%=3-col%
+1150 NEXT
+1160 col%=3-col%
+1170 PROCedge(col%)
+1180 NEXT
+1190 GCOL 0,black
+1200 PROC3d(4,size%,size%,water)
+1210 PROC3d(5,size%,size%,base)
+1220 PROC3dd(5,size%,size%)
+1230 ENDPROC
+1240 :
+1250 DEF PROCpatch(X%,Y%)
+1260 height(0)=land(X%,Y%)-water
+1270 height(1)=land(X%+1,Y%)-water
+1280 height(2)=land(X%+1,Y%+1)-water
+1290 height(3)=land(X%,Y%+1)-water
+1300 F$="FN"
+1310 FOR i%=0 TO 3
+1320 IF height(i%)<0 F$=F$+"b" ELSE F$=F$+"a"
+1330 NEXT
+1340 PROCsea
+1350 GCOL 0,col%
+1360 null=EVAL(F$)
+1370 ENDPROC
+1380 :
+1390 DEF PROCedge(col%)
+1400 GCOL 0,blue
+1410 PROC3d(4,I%,size%,base)
+1420 PROC3d(4,I%+1,size%,base)
+1430 PROC3d(85,I%,size%,water)
+1440 PROC3d(85,I%+1,size%,water)
+1450 GCOL 0,black
+1460 PROC3d(5,I%,size%,water)
+1470 GCOL 0,col%
+1480 PROC3d(4,I%,size%,base)
+1490 PROC3d(4,I%+1,size%,base)
+1500 PROC3dd(85,I%,size%)
+1510 PROC3dd(85,I%+1,size%)
+1520 GCOL 0,black
+1530 PROC3dd(5,I%,size%)
+1540 ENDPROC
+1550 :
+1560 DEF PROCside(col%)
+1570 GCOL 0,blue
+1580 PROC3d(4,size%,J%,base)
+1590 PROC3d(4,size%,J%+1,base)
+1600 PROC3d(85,size%,J%,water)
+1610 PROC3d(85,size%,J%+1,water)
+1620 GCOL 0,black
+1630 PROC3d(5,size%,J%,water)
+1640 GCOL 0,col%
+1650 PROC3d(4,size%,J%,base)
+1660 PROC3d(4,size%,J%+1,base)
+1670 PROC3dd(85,size%,J%)
+1680 PROC3dd(85,size%,J%+1)
+1690 GCOL 0,black
+1700 PROC3dd(5,size%,J%)
+1710 ENDPROC
+1720 :
+1730 DEF PROCsea
+1740 GCOL 0,blue
+1750 PROC3d(4,X%,Y%,water)
+1760 PROC3d(4,X%+1,Y%,water)
+1770 PROC3d(85,X%,Y%+1,water)
+1780 PROC3d(85,X%+1,Y%+1,water)
+1790 ENDPROC
+1800 :
+1810 DEF FNaaaa
+1820 PROC3dd(4,X%,Y%)
+1830 PROC3dd(4,X%+1,Y%)
+1840 PROC3dd(85,X%,Y%+1)
+1850 PROC3dd(85,X%+1,Y%+1)
+1860 GCOL 0,black
+1870 PROC3dd(5,X%+1,Y%)
+1880 PROC3dd(5,X%,Y%)
+1890 PROC3dd(5,X%,Y%+1)
+1900 PROC3dd(5,X%+1,Y%+1)
+1910 =0
+1920 :
+1930 DEF FNaaab
+1940 PROC3dd(4,X%,Y%)
+1950 PROC3dd(4,X%+1,Y%)
+1960 PROC3dm(85,3)
+1970 PROC3dd(85,X%+1,Y%+1)
+1980 PROC3dm(85,2)
+1990 GCOL 0,black
+2000 PROC3dm(5,3)
+2010 PROC3dd(5,X%,Y%)
+2020 PROC3dd(5,X%+1,Y%)
+2030 PROC3dd(5,X%+1,Y%+1)
+2040 PROC3dm(5,2)
+2050 =0
+2060 :
+2070 DEF FNaaba
+2080 PROC3dd(4,X%,Y%)
+2090 PROC3dd(4,X%,Y%+1)
+2100 PROC3dd(85,X%+1,Y%)
+2110 PROC3dm(85,2)
+2120 PROC3dm(85,1)
+2130 GCOL 0,black
+2140 PROC3dm(5,2)
+2150 PROC3dd(5,X%,Y%+1)
+2160 PROC3dd(5,X%,Y%)
+2170 PROC3dd(5,X%+1,Y%)
+2180 PROC3dm(5,1)
+2190 =0
+2200 :
+2210 DEF FNaabb
+2220 PROC3dd(4,X%,Y%)
+2230 PROC3dd(4,X%+1,Y%)
+2240 PROC3dm(85,3)
+2250 PROC3dm(85,1)
+2260 GCOL 0,black
+2270 PROC3dm(5,3)
+2280 PROC3dd(5,X%,Y%)
+2290 PROC3dd(5,X%+1,Y%)
+2300 PROC3dm(5,1)
+2310 =0
+2320 :
+2330 DEF FNabaa
+2340 PROC3dd(4,X%,Y%+1)
+2350 PROC3dd(4,X%+1,Y%+1)
+2360 PROC3dd(85,X%,Y%)
+2370 PROC3dm(85,1)
+2380 PROC3dm(85,0)
+2390 GCOL 0,black
+2400 PROC3dm(5,1)
+2410 PROC3dd(5,X%+1,Y%+1)
+2420 PROC3dd(5,X%,Y%+1)
+2430 PROC3dd(5,X%,Y%)
+2440 PROC3dm(5,0)
+2450 =0
+2460 :
+2470 DEF FNabab
+2480 PROCtri(0)
+2490 GCOL 0,col%
+2500 PROCtri(2)
+2510 =0
+2520 :
+2530 DEF FNabba
+2540 PROC3dd(4,X%,Y%)
+2550 PROC3dd(4,X%,Y%+1)
+2560 PROC3dm(85,0)
+2570 PROC3dm(85,2)
+2580 GCOL 0,black
+2590 PROC3dd(5,X%,Y%+1)
+2600 PROC3dd(5,X%,Y%)
+2610 PROC3dm(5,0)
+2620 PROC3dm(5,2)
+2630 =0
+2640 :
+2650 DEF FNabbb
+2660 PROCtri(0)
+2670 =0
+2680 :
+2690 DEF FNbaaa
+2700 PROC3dm(4,3)
+2710 PROC3dm(4,0)
+2720 PROC3dd(85,X%,Y%+1)
+2730 PROC3dd(85,X%+1,Y%)
+2740 PROC3dd(85,X%+1,Y%+1)
+2750 GCOL 0,black
+2760 PROC3dd(5,X%,Y%+1)
+2770 PROC3dm(5,3)
+2780 PROC3dm(5,0)
+2790 PROC3dd(5,X%+1,Y%)
+2800 PROC3dd(5,X%+1,Y%+1)
+2810 =0
+2820 :
+2830 DEF FNbaab
+2840 PROC3dd(4,X%+1,Y%+1)
+2850 PROC3dd(4,X%+1,Y%)
+2860 PROC3dm(85,2)
+2870 PROC3dm(85,0)
+2880 GCOL 0,black
+2890 PROC3dm(5,2)
+2900 PROC3dd(5,X%+1,Y%+1)
+2910 PROC3dd(5,X%+1,Y%)
+2920 PROC3dm(5,0)
+2930 =0
+2940 :
+2950 DEF FNbaba
+2960 PROCtri(1)
+2970 GCOL 0,col%
+2980 PROCtri(3)
+2990 =0
+3000 :
+3010 DEF FNbabb
+3020 PROCtri(1)
+3030 =0
+3040 :
+3050 DEF FNbbaa
+3060 PROC3dd(4,X%+1,Y%+1)
+3070 PROC3dd(4,X%,Y%+1)
+3080 PROC3dm(85,1)
+3090 PROC3dm(85,3)
+3100 GCOL 0,black
+3110 PROC3dm(5,1)
+3120 PROC3dd(5,X%+1,Y%+1)
+3130 PROC3dd(5,X%,Y%+1)
+3140 PROC3dm(5,3)
+3150 =0
+3160 :
+3170 DEF FNbbab
+3180 PROCtri(2)
+3190 =0
+3200 :
+3210 DEF FNbbba
+3220 PROCtri(3)
+3230 =0
+3240 :
+3250 DEF FNbbbb
+3260 =0
+3270 :
+3280 DEF PROCtat(x%,y%,s1%,s2%)
+3290 PROC3dd(4,x%,y%)
+3300 PROC3dm(4,s1%)
+3310 PROC3dm(85,s2%)
+3320 GCOL 0,black
+3330 PROC3dm(5,s1%)
+3340 PROC3dd(5,x%,y%)
+3350 PROC3dm(5,s2%)
+3360 ENDPROC
+3370 :
+3380 DEF PROCtri(t%)
+3390 IF t%=0 PROCtat(X%,Y%,3,0)
+3400 IF t%=1 PROCtat(X%+1,Y%,0,1)
+3410 IF t%=2 PROCtat(X%+1,Y%+1,1,2)
+3420 IF t%=3 PROCtat(X%,Y%+1,2,3)
+3430 ENDPROC
+3440 :
+3450 DEF PROC3dm(o%,s%)
+3460 IF s%=0 PROCmid(o%,X%,Y%,1,0,0,1)
+3470 IF s%=1 PROCmid(o%,X%+1,Y%,0,1,1,2)
+3480 IF s%=2 PROCmid(o%,X%,Y%+1,1,0,3,2)
+3490 IF s%=3 PROCmid(o%,X%,Y%,0,1,0,3)
+3500 ENDPROC
+3510 :
+3520 DEF PROCmid(o%,xs,ys,xa,ya,zs,ze)
+3530 d=height(zs)/(height(zs)-height(ze))
+3540 IF xa PROC3d(o%,xs+d*xa,ys,water) ELSE PROC3d(o%,xs,ys+d*ya,water)
+3550 ENDPROC
+3560 :
+3570 DEF PROC3dd(o%,X,Y)
+3580 PROC3d(o%,X,Y,land(X,Y))
+3590 ENDPROC
+3600 :
+3610 DEF PROC3d(o%,X,Y,Z)
+3620 PLOT o%,640+(X-Y)*xscale%,850-(X+Y)*yscale%+Z*zscale%
+3630 ENDPROC

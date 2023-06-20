@@ -1,0 +1,58 @@
+MODE1:VDU23;8202;0;0;0;:PROCi:PROCf(f):PROCl:PROCd:END
+DEFPROCi:A%=10:D%=64:E%=32:z%=4:c=TRUE:l=FALSE:f=50:F=3::DIMl(A%,A%):DIMs%(2),x%(2),y%(2),h(3):VDU19,3,4;0;:b=0:D=3:ENDPROC
+DEFPROCf(n%):FORi%=1TOn%:PRINTTAB(0,0);"Faults left:";n%-i%;" ":IFc PROCc
+IFl PROCn
+NEXT:ENDPROC
+DEFPROCc:x%=RND(A%)-1:y%=RND(A%)-1:r%=(RND(A%)-1)^2:a=SGNRND*RND(1)*F:FORX%=0TOA%:G=(X%-x%)^2:IFG<r%PROCo
+NEXT:ENDPROC
+DEFPROCo:H=SQR(r%-G):y=y%-H:J=y%+H:IFy<0y=0
+IFJ>=A%J=A%-1
+FORY%=y TOJ:l(X%,Y%)=l(X%,Y%)+a:NEXT:ENDPROC
+DEFPROCn:REPEAT:s%(1)=RND(4):s%(2)=RND(4):UNTILs%(1)<>s%(2):REPEAT:FORJ%=1TO2:IFs%(J%)=1x%(J%)=0:y%(J%)=RND(A%)-1
+IFs%(J%)=2x%(J%)=RND(A%)-1:y%(J%)=A%
+IFs%(J%)=3x%(J%)=A%:y%(J%)=RND(A%)-1
+IFs%(J%)=4x%(J%)=RND(A%)-1:y%(J%)=0
+NEXT:UNTILx%(1)<>x%(2)ANDy%(1)<>y%(2):M=(y%(2)-y%(1))/(x%(2)-x%(1)):C=y%(1)-M*x%(1):a=SGNRND*RND(1)*F:FORX%=0TOA%:Y%=M*X%+C:IFY%<0Y%=0
+IFY%<=A%PROCe
+NEXT:ENDPROC::PROCe:FORy%=Y%TOA%:l(X%,y%)=l(X%,y%)+a:NEXT:ENDPROC
+DEFPROCl:E=0:p=0:A=0:l(A%,A%)=l(A%-1,A%-1):FORX%=0TOA%-1:l(X%,A%)=l(X%,A%-1):l(A%,X%)=l(A%-1,X%):A=A+l(X%,A%)+l(A%,X%):FORY%=0TOA%-1:A=A+l(X%,Y%):B=(l(X%,Y%)+l(X%+1,Y%)+l(X%+1,Y%+1)+l(X%,Y%+1))/4:IFB<E E=B
+IFB>p p=B
+NEXT:NEXT:w=A/(A%*A%):ENDPROC
+DEFPROCd:CLS:c%=1:FORI%=0TOA%-1:FORJ%=0TOA%-1:PROCp(I%,J%):IFI%=A%-1PROCs(c%)
+c%=3-c%:NEXT:c%=3-c%:PROCg(c%):NEXT:GCOL0,b:PROC3(4,A%,A%,w):PROC3(5,A%,A%,E):PROCA(5,A%,A%):ENDPROC
+DEFPROCp(X%,Y%):h(0)=l(X%,Y%)-w:h(1)=l(X%+1,Y%)-w:h(2)=l(X%+1,Y%+1)-w:h(3)=l(X%,Y%+1)-w:F$="FN":FORi%=0TO3:IFh(i%)<0F$=F$+"b"ELSEF$=F$+"a"
+NEXT:PROCa:GCOL0,c%:n=EVAL(F$):ENDPROC
+DEFPROCg(c%):GCOL0,D:PROC3(4,I%,A%,E):PROC3(4,I%+1,A%,E):PROC3(85,I%,A%,w):PROC3(85,I%+1,A%,w):GCOL0,b:PROC3(5,I%,A%,w):GCOL0,c%:PROC3(4,I%,A%,E):PROC3(4,I%+1,A%,E):PROCA(85,I%,A%):PROCA(85,I%+1,A%):GCOL0,b:PROCA(5,I%,A%):ENDPROC
+DEFPROCs(c%):GCOL0,D:PROC3(4,A%,J%,E):PROC3(4,A%,J%+1,E):PROC3(85,A%,J%,w):PROC3(85,A%,J%+1,w):GCOL0,b:PROC3(5,A%,J%,w):GCOL0,c%:PROC3(4,A%,J%,E):PROC3(4,A%,J%+1,E):PROCA(85,A%,J%):PROCA(85,A%,J%+1):GCOL0,b:PROCA(5,A%,J%):ENDPROC
+DEFPROCa:GCOL0,D:PROC3(4,X%,Y%,w):PROC3(4,X%+1,Y%,w):PROC3(85,X%,Y%+1,w):PROC3(85,X%+1,Y%+1,w):ENDPROC:
+DEFFNaaaa:PROCA(4,X%,Y%):PROCA(4,X%+1,Y%):PROCA(85,X%,Y%+1):PROCA(85,X%+1,Y%+1):GCOL0,b:PROCA(5,X%+1,Y%):PROCA(5,X%,Y%):PROCA(5,X%,Y%+1):PROCA(5,X%+1,Y%+1):=0
+DEFFNaaab:PROCA(4,X%,Y%):PROCA(4,X%+1,Y%):PROCm(85,3):PROCA(85,X%+1,Y%+1):PROCm(85,2):GCOL0,b:PROCm(5,3):PROCA(5,X%,Y%):PROCA(5,X%+1,Y%):PROCA(5,X%+1,Y%+1):PROCm(5,2):=0
+DEFFNaaba:PROCA(4,X%,Y%):PROCA(4,X%,Y%+1):PROCA(85,X%+1,Y%):PROCm(85,2):PROCm(85,1):GCOL0,b:PROCm(5,2):PROCA(5,X%,Y%+1):PROCA(5,X%,Y%):PROCA(5,X%+1,Y%):PROCm(5,1):=0
+DEFFNaabb:PROCA(4,X%,Y%):PROCA(4,X%+1,Y%):PROCm(85,3):PROCm(85,1):GCOL0,b:PROCm(5,3):PROCA(5,X%,Y%):PROCA(5,X%+1,Y%):PROCm(5,1):=0
+DEFFNabaa:PROCA(4,X%,Y%+1):PROCA(4,X%+1,Y%+1):PROCA(85,X%,Y%):PROCm(85,1):PROCm(85,0):GCOL0,b:PROCm(5,1):PROCA(5,X%+1,Y%+1):PROCA(5,X%,Y%+1):PROCA(5,X%,Y%):PROCm(5,0):=0
+DEFFNabab:PROCt(0):GCOL0,c%:PROCt(2):=0
+DEFFNabba:PROCA(4,X%,Y%):PROCA(4,X%,Y%+1):PROCm(85,0):PROCm(85,2):GCOL0,b:PROCA(5,X%,Y%+1):PROCA(5,X%,Y%):PROCm(5,0):PROCm(5,2):=0:
+DEFFNabbb:PROCt(0):=0
+DEFFNbaaa:PROCm(4,3):PROCm(4,0):PROCA(85,X%,Y%+1):PROCA(85,X%+1,Y%):PROCA(85,X%+1,Y%+1):GCOL0,b:PROCA(5,X%,Y%+1):PROCm(5,3):PROCm(5,0):PROCA(5,X%+1,Y%):PROCA(5,X%+1,Y%+1):=0
+DEFFNbaab:PROCA(4,X%+1,Y%+1):PROCA(4,X%+1,Y%):PROCm(85,2):PROCm(85,0):GCOL0,b:PROCm(5,2):PROCA(5,X%+1,Y%+1):PROCA(5,X%+1,Y%):PROCm(5,0):=0
+DEFFNbaba:PROCt(1):GCOL0,c%:PROCt(3):=0
+DEFFNbabb:PROCt(1):=0
+DEFFNbbaa:PROCA(4,X%+1,Y%+1):PROCA(4,X%,Y%+1):PROCm(85,1):PROCm(85,3):GCOL0,b:PROCm(5,1):PROCA(5,X%+1,Y%+1):PROCA(5,X%,Y%+1):PROCm(5,3):=0
+DEFFNbbab:PROCt(2):=0
+DEFFNbbba:PROCt(3):=0
+DEFFNbbbb:=0
+DEFPROCB(x%,y%,B%,C%):PROCA(4,x%,y%):PROCm(4,B%):PROCm(85,C%):GCOL0,b:PROCm(5,B%):PROCA(5,x%,y%):PROCm(5,C%):ENDPROC
+DEFPROCt(t%):IFt%=0PROCB(X%,Y%,3,0)
+IFt%=1PROCB(X%+1,Y%,0,1)
+IFt%=2PROCB(X%+1,Y%+1,1,2)
+IFt%=3PROCB(X%,Y%+1,2,3)
+ENDPROC
+DEFPROCm(o%,s%):IFs%=0PROCC(o%,X%,Y%,1,0,0,1)
+IFs%=1PROCC(o%,X%+1,Y%,0,1,1,2)
+IFs%=2PROCC(o%,X%,Y%+1,1,0,3,2)
+IFs%=3PROCC(o%,X%,Y%,0,1,0,3)
+ENDPROC
+DEFPROCC(o%,x,K,I,L,z,N):d=h(z)/(h(z)-h(N)):IFI PROC3(o%,x+d*I,K,w)ELSEPROC3(o%,x,K+d*L,w)
+ENDPROC
+DEFPROCA(o%,X,Y):PROC3(o%,X,Y,l(X,Y)):ENDPROC
+DEFPROC3(o%,X,Y,Z):PLOTo%,640+(X-Y)*D%,850-(X+Y)*E%+Z*z%:ENDPROC
