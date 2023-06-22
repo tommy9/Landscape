@@ -14,4 +14,4 @@ Without a deadline for a magazine release and the benefit of modern tools, it is
 
 Having made a BBC Basic program that could now scale much higher, it was time to deal with the speed. The original program took about 50 seconds to draw a 10x10 landscape. Moving up to 40x40 with the new approach left it taking around 5 minutes. Not very satisfying! So I decided to learn 6502 assembly code, initially thinking to just convert the slowest parts of the code but in the end converting the marjority of it, after generating the random fault data in Basic. Now we can generate large 40x40 landscapes in around 30-35 seconds, faster than the original but with 16 times more patches!
 
-Try out the new enhanced version via [https://bbc.godbolt.org/]([https://bbc.godbolt.org/](https://bbc.godbolt.org/?disc1=https://tommy9.github.io/Triangles/assets/Landscape.ssd&autoboot)https://bbc.godbolt.org/?disc1=https://tommy9.github.io/Triangles/assets/Landscape.ssd&autoboot).
+Try out the new enhanced version via [https://bbc.godbolt.org/](https://bbc.godbolt.org/?disc1=https://tommy9.github.io/Triangles/assets/Landscape.ssd&autoboot).
