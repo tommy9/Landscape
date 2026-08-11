@@ -34,6 +34,7 @@ divisor = fac2
 result = dividend ;save memory by reusing dividend to store the result
 adjustx = dx ; for PROCmid passing of information to PROC3d
 adjusty = dy
+.jmpPtr         SKIP 2 \ for jump table to patch drawing routines
 
 ORG &2400
 
@@ -380,46 +381,6 @@ ORG &2400
 
     JSR PROCsea
 
-
-\    .testingonly
-\    {
-\        LDA #11
-\        STA gridsize
-\        LDA #0
-\        STA cx
-\        LDA #LO(testingdataRow1)
-\        STA resultsAddr1
-\        LDA #HI(testingdataRow1)
-\        STA resultsAddr1+1
-\        LDA #LO(testingdataRow2)
-\        STA resultsAddr2
-\        LDA #HI(testingdataRow2)
-\        STA resultsAddr2+1
-\
-\        LDA #0
-\        STA cx
-\        STA cy
-\        STA Xcoord
-\        STA Ycoord
-\        JSR PROCpatch
-\
-\        LDA #3
-\        STA cy
-\        STA Ycoord
-\        JSR PROCpatch
-\
-\        LDA #6
-\        STA cy
-\        STA Ycoord
-\        JSR PROCpatch
-\
-\        LDA #9
-\        STA cy
-\        STA Ycoord
-\        JSR PROCpatch
-\    }
-\    RTS \ TODO: remove above or make it a flag?
-
     .mainloop
     {
         \ loop over the x and y coord with cx and cy
@@ -427,13 +388,6 @@ ORG &2400
         STX cx
         STX Xcoord
 
-        \call doline(0)
-        \LDA cx
-        \STA &0601
-        \LDA resultsAddr2
-        \STA &0604
-        \LDA resultsAddr2+1
-        \STA &0605
         JSR doline
         LDA #0
         STA adjustx
@@ -442,8 +396,6 @@ ORG &2400
         .xloop
             \ call doline(cx+1)
             INC cx \ temporary as just for calling doline with cx+1
-            \INX
-            \STX &0601
             \ swap resultsAddr2 and resultsAddr1 and call doline
             LDA resultsAddr2
             PHA
@@ -451,10 +403,8 @@ ORG &2400
             PHA
             LDA resultsAddr1
             STA resultsAddr2
-            \STA &0604
             LDA resultsAddr1+1
             STA resultsAddr2+1
-            \STA &0605
             PLA
             STA resultsAddr1+1
             PLA
@@ -567,67 +517,82 @@ ORG &2400
         ORA #&01
         .height4positive
 
-        CMP #&00
-        BNE check1
-        JSR FNaaaa: RTS
-        .check1
-        CMP #&01
-        BNE check2
-        JSR FNaaab: RTS
-        .check2
-        CMP #&02
-        BNE check3
-        JSR FNaaba: RTS
-        .check3
-        CMP #&03
-        BNE check4
-        JSR FNaabb: RTS
-        .check4
-        CMP #&04
-        BNE check5
-        JSR FNabaa: RTS
-        .check5
-        CMP #&05
-        BNE check6
-        JSR FNabab: RTS
-        .check6
-        CMP #&06
-        BNE check7
-        JSR FNabba: RTS
-        .check7
-        CMP #&07
-        BNE check8
-        JSR FNabbb: RTS
-        .check8
-        CMP #&08
-        BNE check9
-        JSR FNbaaa: RTS
-        .check9
-        CMP #&09
-        BNE check10
-        JSR FNbaab: RTS
-        .check10
-        CMP #&0A
-        BNE check11
-        JSR FNbaba: RTS
-        .check11
-        CMP #&0B
-        BNE check12
-        JSR FNbabb: RTS
-        .check12
-        CMP #&0C
-        BNE check13
-        JSR FNbbaa: RTS
-        .check13
-        CMP #&0D
-        BNE check14
-        JSR FNbbab: RTS
-        .check14
-        CMP #&0E
-        BNE check15
-        JSR FNbbba: RTS
-        .check15
-        RTS \ don't need to plot if all points below water level
+        ; Jump table for patch type
+        ASL A                  \ Multiply 4-bit mask by 2 for word offset
+        TAX
+        LDA patchTable, X
+        STA jmpPtr
+        LDA patchTable+1, X
+        STA jmpPtr+1
+        JMP (jmpPtr)
+
+        .patchTable
+        EQUW FNaaaa, FNaaab, FNaaba, FNaabb
+        EQUW FNabaa, FNabab, FNabba, FNabbb
+        EQUW FNbaaa, FNbaab, FNbaba, FNbabb
+        EQUW FNbbaa, FNbbab, FNbbba, FNbbbb
+
+        ; CMP #&00
+        ; BNE check1
+        ; JMP FNaaaa
+        ; .check1
+        ; CMP #&01
+        ; BNE check2
+        ; JMP FNaaab
+        ; .check2
+        ; CMP #&02
+        ; BNE check3
+        ; JMP FNaaba
+        ; .check3
+        ; CMP #&03
+        ; BNE check4
+        ; JMP FNaabb
+        ; .check4
+        ; CMP #&04
+        ; BNE check5
+        ; JMP FNabaa
+        ; .check5
+        ; CMP #&05
+        ; BNE check6
+        ; JMP FNabab
+        ; .check6
+        ; CMP #&06
+        ; BNE check7
+        ; JMP FNabba
+        ; .check7
+        ; CMP #&07
+        ; BNE check8
+        ; JMP FNabbb
+        ; .check8
+        ; CMP #&08
+        ; BNE check9
+        ; JMP FNbaaa
+        ; .check9
+        ; CMP #&09
+        ; BNE check10
+        ; JMP FNbaab
+        ; .check10
+        ; CMP #&0A
+        ; BNE check11
+        ; JMP FNbaba
+        ; .check11
+        ; CMP #&0B
+        ; BNE check12
+        ; JMP FNbabb
+        ; .check12
+        ; CMP #&0C
+        ; BNE check13
+        ; JMP FNbbaa
+        ; .check13
+        ; CMP #&0D
+        ; BNE check14
+        ; JMP FNbbab
+        ; .check14
+        ; CMP #&0E
+        ; BNE check15
+        ; JMP FNbbba
+        ; .check15
+        ; RTS \ don't need to plot if all points below water level
     }
 
     .PROCside
@@ -1120,6 +1085,9 @@ ORG &2400
 
         RTS
     }
+
+    .FNbbbb
+    RTS \ don't need to plot if all points below water level
 
 }
 
