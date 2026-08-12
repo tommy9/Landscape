@@ -36,6 +36,8 @@ adjustx = dx ; for PROCmid passing of information to PROC3d
 adjusty = dy
 .jmpPtr         SKIP 2 \ for jump table to patch drawing routines
 
+zpEnd = P%
+
 ORG &2400
 
 .start
@@ -694,6 +696,58 @@ ORG &2400
         LDA water+1: STA Zcoord+1
         JSR PROC3d
 
+        \PROC3d(85,0,S%,base)
+        LDA base: STA Zcoord
+        LDA base+1: STA Zcoord+1
+        JSR PROC3d
+
+        \PROC3d(4,S%,S%,base)
+        LDA #4: STA plottype
+        LDA gridsize: STA Ycoord
+        LDA gridsize: STA Xcoord
+        LDA base: STA Zcoord \ have to reset Zcoord as PROC3d modifies it
+        LDA base+1: STA Zcoord+1
+        JSR PROC3d
+
+        \PROC3d(85,S%,0,water)
+        LDA #85: STA plottype
+        LDA #0: STA Ycoord
+        LDA gridsize: STA Xcoord
+        LDA water: STA Zcoord
+        LDA water+1: STA Zcoord+1
+        JSR PROC3d
+
+        \PROC3d(85,S%,0,base)
+        LDA base: STA Zcoord
+        LDA base+1: STA Zcoord+1
+        JSR PROC3d
+
+
+        RTS
+
+        \\ Old code to be removed if new code works
+        \PROC3d(4,0,0,water)
+        LDA #4: STA plottype
+        LDA #0: STA Xcoord
+        LDA #0: STA Ycoord
+        LDA water: STA Zcoord
+        LDA water+1: STA Zcoord+1
+        JSR PROC3d
+
+        \PROC3d(4,S%,0,water)
+        LDA gridsize: STA Xcoord
+        LDA water: STA Zcoord
+        LDA water+1: STA Zcoord+1
+        JSR PROC3d
+
+        \PROC3d(85,0,S%,water)
+        LDA #85: STA plottype
+        LDA #0: STA Xcoord
+        LDA gridsize: STA Ycoord
+        LDA water: STA Zcoord
+        LDA water+1: STA Zcoord+1
+        JSR PROC3d
+
         \PROC3d(85,S%,S%,water)
         LDA gridsize: STA Xcoord
         LDA water: STA Zcoord
@@ -1091,19 +1145,19 @@ ORG &2400
 
 }
 
+\ parameters to be set by the caller
+\ heavily reused between functions to save copying
+.plottype  SKIP 1 \ o%. For PLOT plottype, x, y calls
+.Xcoord    SKIP 1 \ on original 0...S% scale
+.Ycoord    SKIP 1 \ on original 0...S% scale
+.Zcoord    SKIP 2 \ absolute height from landscape (inc water)
+.side1     SKIP 1 \ sides to pay attention to
+.side2     SKIP 1
+.corner    SKIP 1 \ for triangles, which corner to plot
+.xax        SKIP 1 \ 0 or 1 for X or Y axis
+
 .plottingRoutines
 {
-    \ parameters to be set by the caller
-    \ heavily reused between functions to save copying
-    .^plottype  SKIP 1 \ o%. For PLOT plottype, x, y calls
-    .^Xcoord    SKIP 1 \ on original 0...S% scale
-    .^Ycoord    SKIP 1 \ on original 0...S% scale
-    .^Zcoord    SKIP 2 \ absolute height from landscape (inc water)
-    .^side1     SKIP 1 \ sides to pay attention to
-    .^side2     SKIP 1
-    .^corner    SKIP 1 \ for triangles, which corner to plot
-    .xax        SKIP 1 \ 0 or 1 for X or Y axis
-
     .^PROC3dd
     {
         \ sets Zcoord to the height of the point for given corner
@@ -1518,5 +1572,6 @@ ORG &2400
 SAVE "CORE", start, end
 PUTBASIC "BeebEmbiggened.bbc", "LAND"
 PUTFILE "!Boot.txt", "!Boot", &FFFFFF
+PRINT "End of zero page usage ", ~zpEnd
 PRINT "Address of doline function: ", ~doline
 PRINT "Address of drawlandscape: ", ~drawlandscape

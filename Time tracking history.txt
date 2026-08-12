@@ -1,0 +1,14 @@
+Time tracking history
+
+With B2, first 2 runs
+
+Github version from 2023:
+26.38, 43.34
+
+Jump table for plotting routines
+26.34, 43.34
+
+Less triangles for sea
+26.18, 43.17
+
+Save multiplications in the determinant

@@ -1,0 +1,56 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Create source map",
+            "command": "${command:beebvsc.createSourceMap}",
+        },
+        {
+            "label": "BeebVSC Build Target 'Landscape.ssd'",
+            "type": "shell",
+            "dependsOn": [
+                "Create source map"
+            ],
+            "problemMatcher": {
+                "owner": "6502",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}"
+                ],
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            },
+            "command": "BeebAsm",
+            "args": [
+                "-v",
+                "-i",
+                "Landscape.asm",
+                "-do",
+                "Landscape.ssd",
+                "-opt",
+                "3"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "BeebVSC Test Target",
+            "type": "shell",
+            "command": "B2",
+            "args": [
+                "Landscape.ssd"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        }
+    ]
+}
