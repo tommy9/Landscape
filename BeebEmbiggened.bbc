@@ -17,6 +17,7 @@ faults%=50
 DIM l0 S%*2+1:DIM l1 S%*2+1
 DIM fac1 faults%*2: DIM fac2 faults%*2
 DIM dx faults%:DIM dy faults%:DIM ft faults%
+DIM lut1 S%*2+1: DIM lut2 S%*2+1
 VDU 19,3,4;0;: REM set palette
 ENDPROC
 DEFPROCfaults(num%)
@@ -32,7 +33,7 @@ dx?F%=dx%:dy?F%=dy%
 ft?F%=RND MOD256
 REM TODO estimate of total height change
 NEXT
-CALL ASMINIT,?faults%,?S%,?fac1,?fac2,?dx,?dy,?ft
+CALL ASMINIT,?faults%,?S%,?fac1,?fac2,?dx,?dy,?ft,?lut1,?lut2
 ENDPROC
 ENDPROC
 DEFPROClevels

@@ -37,6 +37,8 @@ result = dividend ;save memory by reusing dividend to store the result
 adjustx = dx ; for PROCmid passing of information to PROC3d
 adjusty = dy
 .jmpPtr         SKIP 2 \ for jump table to patch drawing routines
+.lutHscaleAddr  SKIP 2 \ address of k * hscale LUT
+.lut2HscaleAddr SKIP 2 \ address of k * 2 * hscale LUT
 
 zpEnd = P%
 
@@ -57,11 +59,8 @@ JMP drawlandscape
     \ - address of array of dx values (1 byte per fault)
     \ - address of array of dy values (1 byte per fault)
     \ - address of array of delta values (1 byte per fault)
-    \
-    \ Example: CALL &2003, ?numfaults, ?component1addr, ?component2addr, ?dxArray, ?dyArray, ?delta
-    \ use of the ? indirect operator provides the two byte address of the variable directly
-    \ that is great for the addresses as we just store those in zp locations
-    \ but for the number of faults we need to store the value, not the address
+    \ - address of lut_hscale array (2 bytes per grid vertex)
+    \ - address of lut_2hscale array (2 bytes per grid vertex)
     
     \ numfaults
     LDA &0601 \ just the low byte as numfaults is 8 bit
@@ -70,31 +69,6 @@ JMP drawlandscape
     \ gridsize
     LDA &0604  \ just the low byte as gridsize is 8 bit
     STA gridsize
-
-    JMP calchscale \ skip over local variable memory allocation
-
-    \ local variables
-    .*hscale SKIP 2 \ will only need low byte as result almost certainly < 256
-  
-    \ calculate the hscale value as 320 DIV gridsize
-    .calchscale
-    {
-        \ setup
-        LDA #LO(320)
-        STA dividend
-        LDA #HI(320)
-        STA dividend+1
-        LDA gridsize
-        STA divisor
-        LDA #0
-        STA divisor+1
-
-        JSR divide16by16
-        LDA result
-        STA hscale
-        LDA result+1
-        STA hscale+1
-    }
 
     \ component1addr
     LDA &0607
@@ -126,7 +100,104 @@ JMP drawlandscape
     LDA &0614
     STA delta+1
 
-    RTS
+    \ lutHscaleAddr
+    LDA &0616
+    STA lutHscaleAddr
+    LDA &0617
+    STA lutHscaleAddr+1
+
+    \ lut2HscaleAddr
+    LDA &0619
+    STA lut2HscaleAddr
+    LDA &061A
+    STA lut2HscaleAddr+1
+
+    JMP calchscale \ skip over local variable memory allocation
+
+    \ local variables
+    .*hscale SKIP 2 \ will only need low byte as result almost certainly < 256
+  
+    \ calculate the hscale value as 320 DIV gridsize and populate LUTs
+    .calchscale
+    {
+        \ setup
+        LDA #LO(320)
+        STA dividend
+        LDA #HI(320)
+        STA dividend+1
+        LDA gridsize
+        STA divisor
+        LDA #0
+        STA divisor+1
+
+        JSR divide16by16
+        LDA result
+        STA hscale
+        LDA result+1
+        STA hscale+1
+
+        \ Populate LUT tables:
+        \ lut_hscale[k] = k * hscale
+        \ lut_2hscale[k] = k * (2 * hscale)
+        LDA #0
+        STA fac1       \ acc for hscale (low)
+        STA fac1+1     \ acc for hscale (high)
+        STA fac2       \ acc for 2*hscale (low)
+        STA fac2+1     \ acc for 2*hscale (high)
+
+        LDY #0         \ byte offset in LUTs (2 * k)
+        LDX #0         \ loop counter k = 0 to gridsize
+    .lutLoop
+        \ Store lut_hscale[k]
+        LDA fac1
+        STA (lutHscaleAddr),Y
+        LDA fac1+1
+        INY
+        STA (lutHscaleAddr),Y
+        DEY
+
+        \ Store lut_2hscale[k]
+        LDA fac2
+        STA (lut2HscaleAddr),Y
+        LDA fac2+1
+        INY
+        STA (lut2HscaleAddr),Y
+        INY            \ Y is now 2 * (k + 1)
+
+        \ fac1 += hscale
+        CLC
+        LDA fac1
+        ADC hscale
+        STA fac1
+        LDA fac1+1
+        ADC hscale+1
+        STA fac1+1
+
+        \ fac2 += 2 * hscale
+        CLC
+        LDA fac2
+        ADC hscale
+        STA fac2
+        LDA fac2+1
+        ADC hscale+1
+        STA fac2+1
+
+        CLC
+        LDA fac2
+        ADC hscale
+        STA fac2
+        LDA fac2+1
+        ADC hscale+1
+        STA fac2+1
+
+        \ Next k
+        INX
+        CPX gridsize
+        BCC lutLoop
+        BEQ lutLoop
+
+        RTS
+    }
 }
 
 .remainder  SKIP 2
@@ -1373,52 +1444,37 @@ JMP drawlandscape
         .noadjusty1
         LSR result+1 \ divide by 2 so it gets the right scaling for adjusting the Y coordinate
         ROR result
-        \ put (X-Y) in num1 (num1lo and num1hi)
-        \ put hscale * 2 in num2 (safely assume 1 byte)
-        LDA hscale
-        ASL A
-        STA num2
-        LDX #0
+        \ Add X * 2 * hscale (lut_2hscale[X]) to screenpos
         LDA Xcoord
-        SEC
-        SBC Ycoord
-        STA num1lo
-        BPL num1Xpositive
-        INX \ num1 is negative so remember that
-        EOR #$FF
+        ASL A
+        TAY
         CLC
-        ADC #1 \ 2's complement
-        STA num1lo
-        .num1Xpositive
-        STX sign
-        LDA #0
-        STA num1hi
-        JSR multiply8to16 \ results in A and Y
-        \ change sign of result if (X-Y) was negative
-        LDX sign
-        BEQ num1Xpositive2
-        \ subtract fac2 from 0
-        LDA #0
-        SEC
-        SBC fac2
-        STA fac2
-        LDA #0
-        SBC fac2+1
-        STA fac2+1
-        .num1Xpositive2
-        \ add screenpos to fac2
-        LDA fac2
-        CLC
-        ADC screenpos
+        LDA screenpos
+        ADC (lut2HscaleAddr),Y
         STA screenpos
-        LDA fac2+1
-        ADC screenpos+1
+        LDA screenpos+1
+        INY
+        ADC (lut2HscaleAddr),Y
         STA screenpos+1
+
+        \ Subtract Y * 2 * hscale (lut_2hscale[Y]) from screenpos
+        LDA Ycoord
+        ASL A
+        TAY
+        SEC
+        LDA screenpos
+        SBC (lut2HscaleAddr),Y
+        STA screenpos
+        LDA screenpos+1
+        INY
+        SBC (lut2HscaleAddr),Y
+        STA screenpos+1
+
         LDA screenpos: JSR oswrch
         LDA screenpos+1: JSR oswrch
 
         \ ** Calculate the y position **
-        \ 850-(X+Y)*hscale%+Z*zscale (zscale just ROR,ROR i.e. divide by 4?)
+        \ 850-(X+Y)*hscale%+Z*zscale
         LDA #LO(850)
         STA screenpos
         LDA #HI(850)
@@ -1435,24 +1491,31 @@ JMP drawlandscape
         SBC result+1
         STA screenpos+1
         .noadjusty2
-        \ put (X+Y) in num1 (num1lo and num1hi)
-        \ put hscale in num2 (safely assume 1 byte)
-        LDA hscale
-        STA num2
+
+        \ Subtract X * hscale (lut_hscale[X]) from screenpos
         LDA Xcoord
-        CLC
-        ADC Ycoord
-        STA num1lo
-        LDA #0
-        STA num1hi
-        JSR multiply8to16 \ results in fac2 (also A and Y)
-        \ subtract num1 from screenpos
-        LDA screenpos
+        ASL A
+        TAY
         SEC
-        SBC fac2
+        LDA screenpos
+        SBC (lutHscaleAddr),Y
         STA screenpos
         LDA screenpos+1
-        SBC fac2+1
+        INY
+        SBC (lutHscaleAddr),Y
+        STA screenpos+1
+
+        \ Subtract Y * hscale (lut_hscale[Y]) from screenpos
+        LDA Ycoord
+        ASL A
+        TAY
+        SEC
+        LDA screenpos
+        SBC (lutHscaleAddr),Y
+        STA screenpos
+        LDA screenpos+1
+        INY
+        SBC (lutHscaleAddr),Y
         STA screenpos+1
         \ apply zscale to Zcoord (divide by 4 by 2 RORs)
         LDA Zcoord+1

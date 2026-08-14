@@ -14,3 +14,5 @@ Less triangles for sea
 Save multiplications in the determinant
 7.24, 24.23
 
+Lookup for scaling x/y coordinate by horizontal scale
+7.15, 23.51
