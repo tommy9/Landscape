@@ -1564,5 +1564,5 @@ SAVE "CORE", start, end
 PUTBASIC "BeebEmbiggened.bbc", "LAND"
 PUTFILE "!Boot.txt", "!Boot", &FFFFFF
 PRINT "End of zero page usage ", ~zpEnd
-PRINT "Address of doline function: ", ~doline
-PRINT "Address of drawlandscape: ", ~drawlandscape
+PRINT "Call ASMINT=", ~start
+PRINT "Call MAKEGRID=", ~callDrawing
