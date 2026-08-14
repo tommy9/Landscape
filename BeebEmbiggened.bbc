@@ -1,5 +1,5 @@
-ASMINIT=&2400
-MAKEGRID=&2560
+ASMINIT=&2000
+MAKEGRID=&2003
 MODE 1:VDU 23;8202;0;0;0;
 PROCinit
 PROCfaults(faults%)
@@ -15,7 +15,7 @@ R%=TIME
 S%=40
 faults%=50
 DIM l0 S%*2+1:DIM l1 S%*2+1
-DIM fac1 faults%*2
+DIM fac1 faults%*2: DIM fac2 faults%*2
 DIM dx faults%:DIM dy faults%:DIM ft faults%
 VDU 19,3,4;0;
 ENDPROC
@@ -32,7 +32,7 @@ dx?F%=dx%:dy?F%=dy%
 ft?F%=RND MOD256
 REM TODO estimate of total height change
 NEXT
-CALL ASMINIT,?faults%,?S%,?fac1,?dx,?dy,?ft
+CALL ASMINIT,?faults%,?S%,?fac1,?fac2,?dx,?dy,?ft
 ENDPROC
 ENDPROC
 DEFPROClevels

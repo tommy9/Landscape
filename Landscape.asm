@@ -7,16 +7,17 @@ ORG &70
 .numfaults      SKIP 1
 .faultNo        SKIP 1 \ index into the fault arrays
 .component1addr SKIP 2 \ address of the first component of the determinant calculation array
+.component2addr SKIP 2 \ address of the second component of the determinant calculation array
 .dxArray        SKIP 2 \ address of the dx array
 .dyArray        SKIP 2 \ address of the dy array
-.delta          SKIP 2 \ address of the fault delta array
+.delta          SKIP 2 \ address of the fault delta array (fault heights)
 \ values used in the determinant
 .fac1			SKIP 2 \ stores the component1 value precomputed in BASIC
 .fac2			SKIP 2 \ output by the multiplication routine
-.dx      		SKIP 1
-.dy     		SKIP 1
-.cx             SKIP 1
-.cy      		SKIP 1
+.dx      		SKIP 1 \ delta-x of fault line
+.dy     		SKIP 1 \ delta-y of fault line
+.cx             SKIP 1 \ counter for x position (0 to gridsize)
+.cy      		SKIP 1 \ counter for y position (0 to gridsize)
 \ values used in multiplication routine
 .num1lo         SKIP 1
 .num1hi         SKIP 1
@@ -38,9 +39,12 @@ adjusty = dy
 
 zpEnd = P%
 
-ORG &2400
+ORG &2000
 
 .start
+JMP setup
+.callDrawing
+JMP drawlandscape
 .setup
 {
     \ Load data from CALL parameters - called once at start of program
@@ -48,11 +52,12 @@ ORG &2400
     \ - number of faults (1 byte)
     \ - gridsize (1 byte)
     \ - address of array of determinant components (2 bytes per fault)
+    \ - address of array to store dynamic determinant components (2 bytes per fault)
     \ - address of array of dx values (1 byte per fault)
     \ - address of array of dy values (1 byte per fault)
     \ - address of array of delta values (1 byte per fault)
     \
-    \ Example: CALL &2E00, ?numfaults, ?component1addr, ?dxArray, ?dyArray, ?delta
+    \ Example: CALL &2003, ?numfaults, ?component1addr, ?component2addr, ?dxArray, ?dyArray, ?delta
     \ use of the ? indirect operator provides the two byte address of the variable directly
     \ that is great for the addresses as we just store those in zp locations
     \ but for the number of faults we need to store the value, not the address
@@ -96,22 +101,28 @@ ORG &2400
     LDA &0608
     STA component1addr+1
 
-    \ dxArray
+    \ component2addr
     LDA &060A
-    STA dxArray
+    STA component2addr
     LDA &060B
+    STA component2addr+1
+
+    \ dxArray
+    LDA &060D
+    STA dxArray
+    LDA &060E
     STA dxArray+1
 
     \ dyArray
-    LDA &060D
+    LDA &0610
     STA dyArray
-    LDA &060E
+    LDA &0611
     STA dyArray+1
 
     \ delta
-    LDA &0610
+    LDA &0613
     STA delta
-    LDA &0611
+    LDA &0614
     STA delta+1
 
     RTS
@@ -185,7 +196,7 @@ ORG &2400
     \STA resultsAddr1+1
 
     \loop through all the points (y loop)
-    LDY gridsize
+    LDY #0
     STY cy
     .yloop
         LDX cx \ restore as gets obliterated in the subroutines
@@ -200,8 +211,11 @@ ORG &2400
         LDA currentDelta+1
         INY
         STA (resultsAddr1),Y
-        DEC cy
-    BPL yloop
+        INC cy
+        LDA cy
+        CMP gridsize
+    BCC yloop
+    BEQ yloop
     RTS
 
 .doCheck \\calculate height at pos cx,cy
@@ -533,68 +547,6 @@ ORG &2400
         EQUW FNabaa, FNabab, FNabba, FNabbb
         EQUW FNbaaa, FNbaab, FNbaba, FNbabb
         EQUW FNbbaa, FNbbab, FNbbba, FNbbbb
-
-        ; CMP #&00
-        ; BNE check1
-        ; JMP FNaaaa
-        ; .check1
-        ; CMP #&01
-        ; BNE check2
-        ; JMP FNaaab
-        ; .check2
-        ; CMP #&02
-        ; BNE check3
-        ; JMP FNaaba
-        ; .check3
-        ; CMP #&03
-        ; BNE check4
-        ; JMP FNaabb
-        ; .check4
-        ; CMP #&04
-        ; BNE check5
-        ; JMP FNabaa
-        ; .check5
-        ; CMP #&05
-        ; BNE check6
-        ; JMP FNabab
-        ; .check6
-        ; CMP #&06
-        ; BNE check7
-        ; JMP FNabba
-        ; .check7
-        ; CMP #&07
-        ; BNE check8
-        ; JMP FNabbb
-        ; .check8
-        ; CMP #&08
-        ; BNE check9
-        ; JMP FNbaaa
-        ; .check9
-        ; CMP #&09
-        ; BNE check10
-        ; JMP FNbaab
-        ; .check10
-        ; CMP #&0A
-        ; BNE check11
-        ; JMP FNbaba
-        ; .check11
-        ; CMP #&0B
-        ; BNE check12
-        ; JMP FNbabb
-        ; .check12
-        ; CMP #&0C
-        ; BNE check13
-        ; JMP FNbbaa
-        ; .check13
-        ; CMP #&0D
-        ; BNE check14
-        ; JMP FNbbab
-        ; .check14
-        ; CMP #&0E
-        ; BNE check15
-        ; JMP FNbbba
-        ; .check15
-        ; RTS \ don't need to plot if all points below water level
     }
 
     .PROCside
@@ -790,9 +742,7 @@ ORG &2400
         LDA gridsize: STA Ycoord
         LDA water: STA Zcoord
         LDA water+1: STA Zcoord+1
-        JSR PROC3d
-
-        RTS
+        JMP PROC3d \ Call JMP so don't need to call RTS after JSR
     }
 
     .FNaaaa \ all points above water
