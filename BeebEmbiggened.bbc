@@ -1,5 +1,5 @@
-ASMINIT=&2000
-MAKEGRID=&2003
+ASMINIT=&2100
+MAKEGRID=&2103
 MODE 1:VDU 23;8202;0;0;0;
 PROCinit
 PROCfaults(faults%)
@@ -17,7 +17,7 @@ faults%=50
 DIM l0 S%*2+1:DIM l1 S%*2+1
 DIM fac1 faults%*2: DIM fac2 faults%*2
 DIM dx faults%:DIM dy faults%:DIM ft faults%
-VDU 19,3,4;0;
+VDU 19,3,4;0;: REM set palette
 ENDPROC
 DEFPROCfaults(num%)
 totadd=0

@@ -26,6 +26,7 @@ ORG &70
 .currentDelta   SKIP 2
 \ values used for get line routine
 .gridsize       SKIP 1
+.maxYOffset     SKIP 1 \ (gridsize + 1) * 2 for cy loop termination
 .resultsAddr1   SKIP 2 \ address of the results array (l0 or l1 in BASIC)
 .resultsAddr2   SKIP 2 \ address of the other results array (l0 or l1 in BASIC)
 .sign           SKIP 1 \ sign of the result
@@ -39,7 +40,7 @@ adjusty = dy
 
 zpEnd = P%
 
-ORG &2000
+ORG &2100
 
 .start
 JMP setup
@@ -182,123 +183,83 @@ JMP drawlandscape
 
 \ main function for getting the landscape height of one row
 .doline
-    \ cx and results array address set by the caller
+{
+    \ Calculate maxYOffset = (gridsize + 1) * 2
+    LDA gridsize
+    CLC
+    ADC #1
+    ASL A
+    STA maxYOffset
 
-    \ process parameters
-    \ cx
-    \LDA &0601 \ just the low byte as cx is 8 bit
-    \STA cx
-
-    \ result array
-    \LDA &0604
-    \STA resultsAddr1
-    \LDA &0605
-    \STA resultsAddr1+1
-
-    \loop through all the points (y loop)
-    LDY #0
-    STY cy
-    .yloop
-        LDX cx \ restore as gets obliterated in the subroutines
-        LDY cy
-        JSR doCheck \ (result in currentDelta)
-        \copy result to results array
-        LDA cy
-        ASL A
-        TAY
-        LDA currentDelta
-        STA (resultsAddr1),Y
-        LDA currentDelta+1
-        INY
-        STA (resultsAddr1),Y
-        INC cy
-        LDA cy
-        CMP gridsize
-    BCC yloop
-    BEQ yloop
-    RTS
-
-.doCheck \\calculate height at pos cx,cy
-    LDA numfaults
-    STA faultNo \ faultNo is used as an array index, so start at numfaults-1
-    DEC faultNo
-    LDA #0 \ clear result
-    STA currentDelta
-    STA currentDelta+1
-    .faultLoop
-        LDA faultNo
-        JSR checkfault \ accumulator holds high byte of result, so can check if positive or negative easily
-        BMI below
-        \ add signed 8bit delta array value to current delta
-        LDY faultNo
-        LDX #0
-        CLC
-        LDA (delta),Y
-        BPL positivedelta
-        DEX
-        .positivedelta
-        ADC currentDelta
-        STA currentDelta
-        TXA
-        ADC currentDelta+1
-        STA currentDelta+1
-
-        .below \ no change to current delta at this position
-        DEC faultNo
-    BPL faultLoop
-    RTS
-.checkfault
-    \\ Accumulator holds the index into the fault arrays
-    \\ copy data into zp locations for the determinant
-    TAY \ want to use Y offset of the array entry points
-    LDA (dxArray),Y
-    STA dx
-    LDA (dyArray),Y
-    STA dy
-    TYA \ return to the faultNo
-    ASL A \ need to multiply by 2 because the array entries are 2 bytes
+    \ Clear row height buffer in (resultsAddr1) for (gridsize + 1) points
+    LDA gridsize
+    ASL A
     TAY
-    LDA (component1addr),Y
+    INY
+    LDA #0
+.clrRow
+    STA (resultsAddr1),Y
+    DEY
+    BPL clrRow
+
+    \ Loop through all faults: faultNo = 0 to numfaults - 1
+    LDA #0
+    STA faultNo
+.faultLoop
+    \ 1. Fetch colBase[faultNo] into fac1 (current determinant for cx)
+    LDA faultNo
+    ASL A
+    TAY
+    LDA (component2addr),Y
     STA fac1
     INY
-    LDA (component1addr),Y
+    LDA (component2addr),Y
     STA fac1+1
-    JSR determinant
-    RTS
-.determinant
-{
-\\ Inputs: 
-\\ - precomputed factor (dx*ay-dy*ax). Signed 16 bit
-\\ - dx. Signed 8 bit <= S%
-\\ - dy. Signed 8 bit <= S%
-\\ - cx. Unsigned 8 bit <= S%
-\\ - cy. Unsigned 8 bit <= S%
 
-\\ Outputs:
-\\ - indicator if a point is above or below the line. 0 if below, 1 if above. Unsigned 8 bit <= S%
-
-\\ Calculation:
-\\ fac1 - dx*cy + dy*cx <= 0
-\\
-\\ order of calculation:
-\\ 1. dx*cy = "fac2"
-\\ 2. subtract fac2 from fac1
-\\ 3. dy*cx = "fac2"
-\\ 4. add fac2 to fac1
-\\ Result is check of result is negative or not (could be in sign bit or separate register/address)
-
-    \1. dx*cy
+    \ 2. Fetch dx[faultNo] and sign-extend to 16 bits in fac2
+    LDY faultNo
+    LDA (dxArray),Y
+    STA fac2
     LDX #0
-    LDA dx
-    STA num1lo
-    BPL dxpositive
+    CMP #$80
+    BCC dxPos
     DEX
-    .dxpositive
-    STX num1hi
-    LDA cy
-    STA num2
-    JSR multiply8to16
-    \2. subtract fac2 from fac1 (16 bit subtraction)
+.dxPos
+    STX fac2+1
+
+    \ 3. Fetch delta[faultNo] and sign-extend to 16 bits in currentDelta
+    LDA (delta),Y
+    STA currentDelta
+    LDX #0
+    CMP #$80
+    BCC deltaPos
+    DEX
+.deltaPos
+    STX currentDelta+1
+
+    \ 4. Inner loop over cy = 0 to gridsize
+    LDY #0
+.cyLoop
+    LDA fac1+1
+    BMI belowFault
+
+    \ Point is above/on fault line: add currentDelta to (resultsAddr1),Y
+    CLC
+    LDA (resultsAddr1),Y
+    ADC currentDelta
+    STA (resultsAddr1),Y
+    INY
+    LDA (resultsAddr1),Y
+    ADC currentDelta+1
+    STA (resultsAddr1),Y
+    DEY
+    JMP stepDet
+
+.belowFault
+    \ Point is below fault line: do not add delta
+
+.stepDet
+    \ fac1 = fac1 - dx (16-bit subtraction)
     SEC
     LDA fac1
     SBC fac2
@@ -306,26 +267,44 @@ JMP drawlandscape
     LDA fac1+1
     SBC fac2+1
     STA fac1+1
-    \3. dy*cx
+
+    \ Advance to next cy (offset += 2)
+    INY
+    INY
+    CPY maxYOffset
+    BNE cyLoop
+
+    \ 5. Advance colBase[faultNo] += dy[faultNo] for the next column (cx + 1)
+    LDY faultNo
+    LDA (dyArray),Y
+    STA fac2
     LDX #0
-    LDA dy
-    STA num1lo
-    BPL dypositive
+    CMP #$80
+    BCC dyPos
     DEX
-    .dypositive
-    STX num1hi
-    LDA cx
-    STA num2
-    JSR multiply8to16
-    \4. add fac2 to fac1 (16 bit addition)
+.dyPos
+    STX fac2+1
+
+    TYA
+    ASL A
+    TAY
     CLC
-    LDA fac1
+    LDA (component2addr),Y
     ADC fac2
-    STA fac1
-    LDA fac1+1
+    STA (component2addr),Y
+    INY
+    LDA (component2addr),Y
     ADC fac2+1
-    STA fac1+1
+    STA (component2addr),Y
+
+    \ Next fault
+    INC faultNo
+    LDA faultNo
+    CMP numfaults
+    BNE faultLoop
+
     RTS
+}
 \Multiplies "num1" by "num2" and stores result in .A (low byte, also in .X) and .Y (high byte)
 \uses extra zp var "num1hi" which should hold the high byte of num1
 
@@ -355,7 +334,6 @@ JMP drawlandscape
         STY fac2+1
         RTS
     }
-}
 .drawlandscape
 {
     .saveParams
@@ -394,6 +372,17 @@ JMP drawlandscape
     STA base
     LDA #HI(-400)
     STA base+1
+
+    \ copy fac1 (component1addr) into colBase (component2addr) for cx = 0
+    LDA numfaults
+    ASL A
+    TAY
+    .initColBase
+        DEY
+        LDA (component1addr),Y
+        STA (component2addr),Y
+        CPY #0
+        BNE initColBase
 
     JSR PROCsea
 
@@ -1506,17 +1495,6 @@ JMP drawlandscape
         RTS
     }
 }
-\.testingdataRow1
-\ EQUW 100, 100, 0, 100, 100, 0, 100, 100, 0, 100, 100
-\ EQUW 0, 0, 0, 100, -50, 0, -20, 40, 0, -20, -20
-\ EQUW -20, 40, 0, -20, -20, 0, 40, -20, 0, -10, -10
-\EQUW -20, 40, 0, 40, -20, 0, 40, -20, 0, -10, -10
-\.testingdataRow2
-\EQUW 40, -20, 0, -20, 40, 0, -20, -20, 0, 40, -10
-\ EQUW -20, -20, 0, -20, 40, 0, -20, -20, 0, 40, -10
-\ EQUW 100, 100, 0, 100, -50, 0, -50, 100, 0, -50, -50
-\ EQUW 0, 0, 0, 100, 100, 0, 40, 40, 0, 40, 40
-
 .end
 
 SAVE "CORE", start, end
