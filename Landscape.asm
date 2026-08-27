@@ -639,9 +639,7 @@ JMP drawlandscape
         \ PROC3dd(85,S%,J%+1,2)
         INC Ycoord
         LDA #2: STA corner
-        JSR PROC3dd
-
-        RTS
+        JMP PROC3dd
     }
 
     .PROCedge
@@ -674,9 +672,7 @@ JMP drawlandscape
         \ PROC3dd(85,I%+1,S%,2)
         INC Xcoord
         LDA #2: STA corner
-        JSR PROC3dd
-
-        RTS
+        JMP PROC3dd
     }
 
     .PROCsea
@@ -732,77 +728,7 @@ JMP drawlandscape
         \PROC3d(85,S%,0,base)
         LDA base: STA Zcoord
         LDA base+1: STA Zcoord+1
-        JSR PROC3d
-
-
-        RTS
-
-        \\ Old code to be removed if new code works
-        \PROC3d(4,0,0,water)
-        LDA #4: STA plottype
-        LDA #0: STA Xcoord
-        LDA #0: STA Ycoord
-        LDA water: STA Zcoord
-        LDA water+1: STA Zcoord+1
-        JSR PROC3d
-
-        \PROC3d(4,S%,0,water)
-        LDA gridsize: STA Xcoord
-        LDA water: STA Zcoord
-        LDA water+1: STA Zcoord+1
-        JSR PROC3d
-
-        \PROC3d(85,0,S%,water)
-        LDA #85: STA plottype
-        LDA #0: STA Xcoord
-        LDA gridsize: STA Ycoord
-        LDA water: STA Zcoord
-        LDA water+1: STA Zcoord+1
-        JSR PROC3d
-
-        \PROC3d(85,S%,S%,water)
-        LDA gridsize: STA Xcoord
-        LDA water: STA Zcoord
-        LDA water+1: STA Zcoord+1
-        JSR PROC3d
-
-        \PROC3d(85,0,S%,base)
-        LDA #0: STA Xcoord
-        LDA base: STA Zcoord
-        LDA base+1: STA Zcoord+1
-        JSR PROC3d
-
-        \PROC3d(85,S%,S%,base)
-        LDA gridsize: STA Xcoord
-        LDA base: STA Zcoord \ have to reset Zcoord as PROC3d modifies it
-        LDA base+1: STA Zcoord+1
-        JSR PROC3d
-
-        \PROC3d(4,S%,0,base)
-        LDA #4: STA plottype
-        LDA #0: STA Ycoord
-        LDA base: STA Zcoord \ have to reset Zcoord as PROC3d modifies it
-        LDA base+1: STA Zcoord+1
-        JSR PROC3d
-
-        \PROC3d(4,S%,S%,base)
-        LDA gridsize: STA Ycoord
-        LDA base: STA Zcoord \ have to reset Zcoord as PROC3d modifies it
-        LDA base+1: STA Zcoord+1
-        JSR PROC3d
-
-        \PROC3d(85,S%,0,water)
-        LDA #0: STA Ycoord
-        LDA #85: STA plottype
-        LDA water: STA Zcoord
-        LDA water+1: STA Zcoord+1
-        JSR PROC3d
-
-        \PROC3d(85,S%,S%,water)
-        LDA gridsize: STA Ycoord
-        LDA water: STA Zcoord
-        LDA water+1: STA Zcoord+1
-        JMP PROC3d \ Call JMP so don't need to call RTS after JSR
+        JMP PROC3d
     }
 
     .FNaaaa \ all points above water
@@ -830,9 +756,7 @@ JMP drawlandscape
 
         INC Xcoord
         LDA #2: STA corner
-        JSR PROC3dd
-
-        RTS
+        JMP PROC3dd
     }
 
     .FNaaab
@@ -864,9 +788,7 @@ JMP drawlandscape
         \ PROC3dm(85,2) : will use X%,Y%+1
         DEC Xcoord
         LDA #2: STA side1
-        JSR PROC3dm
-
-        RTS
+        JMP PROC3dm
     }
 
     .FNaaba
@@ -900,9 +822,7 @@ JMP drawlandscape
         INC Xcoord
         DEC Ycoord
         LDA #1: STA side1
-        JSR PROC3dm
-
-        RTS
+        JMP PROC3dm
     }
 
     .FNaabb
@@ -928,9 +848,7 @@ JMP drawlandscape
         \ PROC3dm(85,1) : will use X%+1,Y%
         INC Xcoord
         LDA #1: STA side1
-        JSR PROC3dm
-
-        RTS
+        JMP PROC3dm
     }
 
     .FNabaa
@@ -963,9 +881,7 @@ JMP drawlandscape
         \ PROC3dm(85,0) : will use X%,Y%
         DEC Xcoord
         LDA #0: STA side1
-        JSR PROC3dm
-
-        RTS
+        JMP PROC3dm
     }
 
     .FNabab
@@ -975,8 +891,7 @@ JMP drawlandscape
         LDA #0: STA corner
         JSR PROCtri
         LDA #2: STA corner
-        JSR PROCtri
-        RTS
+        JMP PROCtri
     }
 
     .FNabba
@@ -1002,17 +917,14 @@ JMP drawlandscape
         \ PROC3dm(85,2) : will use X%,Y%+1
         INC Ycoord
         LDA #2: STA side1
-        JSR PROC3dm
-
-        RTS
+        JMP PROC3dm
     }
 
     .FNabbb
     {
         \ PROCtri(0)
         LDA #0: STA corner
-        JSR PROCtri
-        RTS
+        JMP PROCtri
     }
 
     .FNbaaa
@@ -1043,9 +955,7 @@ JMP drawlandscape
         \ PROC3dd(85,X%+1,Y%+1,2)
         INC Ycoord
         LDA #2: STA corner
-        JSR PROC3dd
-
-        RTS
+        JMP PROC3dd
     }
 
     .FNbaab
@@ -1074,9 +984,7 @@ JMP drawlandscape
         \ PROC3dm(85,0)
         DEC Ycoord
         LDA #0: STA side1
-        JSR PROC3dm
-
-        RTS
+        JMP PROC3dm
     }
 
     .FNbaba
@@ -1087,18 +995,14 @@ JMP drawlandscape
 
         \ PROCtri(3)
         LDA #3: STA corner
-        JSR PROCtri
-
-        RTS
+        JMP PROCtri
     }
 
     .FNbabb
     {
         \ PROCtri(1)
         LDA #1: STA corner
-        JSR PROCtri
-
-        RTS
+        JMP PROCtri
     }
 
     .FNbbaa
@@ -1127,27 +1031,21 @@ JMP drawlandscape
         \ PROC3dm(85,3)
         DEC Xcoord
         LDA #3: STA side1
-        JSR PROC3dm
-
-        RTS
+        JMP PROC3dm
     }
 
     .FNbbab
     {
         \ PROCtri(2)
         LDA #2: STA corner
-        JSR PROCtri
-
-        RTS
+        JMP PROCtri
     }
 
     .FNbbba
     {
         \ PROCtri(3)
         LDA #3: STA corner
-        JSR PROCtri
-
-        RTS
+        JMP PROCtri
     }
 
     .FNbbbb
@@ -1164,7 +1062,7 @@ JMP drawlandscape
 .side1     SKIP 1 \ sides to pay attention to
 .side2     SKIP 1
 .corner    SKIP 1 \ for triangles, which corner to plot
-.xax        SKIP 1 \ 0 or 1 for X or Y axis
+.xax       SKIP 1 \ 0 or 1 for X or Y axis
 
 .plottingRoutines
 {
@@ -1184,8 +1082,7 @@ JMP drawlandscape
         INY
         LDA heights,Y \ could just skip INY and reference heights+1 but this is clearer
         STA Zcoord+1
-        JSR PROC3d
-        RTS
+        JMP PROC3d
     }
 
 
@@ -1202,18 +1099,15 @@ JMP drawlandscape
         LDA corner
         CMP #0
         BNE not0
-        JSR corner0
-        RTS
+        JMP corner0
         .not0
         CMP #1
         BNE not1
-        JSR corner1
-        RTS
+        JMP corner1
         .not1
         CMP #2
         BNE not2
-        JSR corner2
-        RTS
+        JMP corner2
         .not2
         CMP #3
         BEQ corner3
@@ -1222,30 +1116,26 @@ JMP drawlandscape
         .corner0
         LDA #3: STA side1
         LDA #0: STA side2
-        JSR PROCtat
-        RTS
+        JMP PROCtat
 
         .corner1
         INC Xcoord
         LDA #0: STA side1
         LDA #1: STA side2
-        JSR PROCtat
-        RTS
+        JMP PROCtat
 
         .corner2
         INC Xcoord
         INC Ycoord
         LDA #1: STA side1
         LDA #2: STA side2
-        JSR PROCtat
-        RTS
+        JMP PROCtat
 
         .corner3
         INC Ycoord
         LDA #2: STA side1
         LDA #3: STA side2
-        JSR PROCtat
-        RTS
+        JMP PROCtat
     }
 
     .^PROCtat
@@ -1268,9 +1158,7 @@ JMP drawlandscape
         PLA \ restore side2
         \ LDA side2 \ side 2 is being changed by PROC3dm
         STA side1
-        JSR PROC3dm
-
-        RTS
+        JMP PROC3dm
     }
 
     .^PROC3dm
@@ -1292,18 +1180,15 @@ JMP drawlandscape
         LDA side1
         CMP #0
         BNE not0
-        JSR sideis0
-        RTS
+        JMP sideis0
         .not0
         CMP #1
         BNE not1
-        JSR sideis1
-        RTS
+        JMP sideis1
         .not1
         CMP #2
         BNE not2
-        JSR sideis2
-        RTS
+        JMP sideis2
         .not2
         CMP #3
         BEQ sideis3
@@ -1313,31 +1198,27 @@ JMP drawlandscape
         LDA #1: STA xax
         LDA #0: STA side1
         LDA #1: STA side2
-        JSR PROCmid
-        RTS
+        JMP PROCmid
 
         .sideis1
         INC Xcoord
         LDA #0: STA xax
         LDA #1: STA side1
         LDA #2: STA side2
-        JSR PROCmid
-        RTS
+        JMP PROCmid
 
         .sideis2
         INC Ycoord
         LDA #1: STA xax
         LDA #3: STA side1
         LDA #2: STA side2
-        JSR PROCmid
-        RTS
+        JMP PROCmid
 
         .sideis3
         LDA #0: STA xax
         LDA #0: STA side1
         LDA #3: STA side2
-        JSR PROCmid
-        RTS
+        JMP PROCmid
     }
 
     .PROCmid
@@ -1405,8 +1286,7 @@ JMP drawlandscape
         \ step 3
         JSR divide16by16
         \ plot triangle
-        JSR PROC3d
-        RTS
+        JMP PROC3d
     }
 
     .screenpos SKIP 2
