@@ -111,6 +111,10 @@ def launch_and_capture(args: argparse.Namespace):
             if hold.frame is None:
                 raise RuntimeError("Beebium returned a screen hold without a frame")
             reading = bbc.video.screen_text(hold_id=hold.hold_id)
+            completion_text = next(
+                (run.text for run in reading.runs if args.marker in run.text),
+                args.marker,
+            )
             raw = hold.frame.to_pil_image()
             normalized = raw.copy()
             band = find_marker_band(reading, args.marker, raw.width)
@@ -121,6 +125,7 @@ def launch_and_capture(args: argparse.Namespace):
                 "size": [raw.width, raw.height],
                 "masked_band": list(band),
                 "marker": args.marker,
+                "completion_text": completion_text,
             }
             return raw, normalized, metadata
         finally:
@@ -156,12 +161,13 @@ def main() -> int:
     if expected.size != normalized.size:
         raise RuntimeError(f"Frame size changed: expected {expected.size}, got {normalized.size}")
     diff = ImageChops.difference(expected, normalized)
-    bbox = diff.getbbox()
+    rgb_diff = diff.convert("RGB")
+    bbox = rgb_diff.getbbox()
     if bbox is None:
         print("Visual regression check passed")
         return 0
     diff.save(output_dir / "diff.png")
-    changed = sum(1 for pixel in diff.getdata() if pixel != (0, 0, 0, 0))
+    changed = sum(1 for pixel in rgb_diff.getdata() if pixel != (0, 0, 0))
     print(f"Visual regression check failed: {changed} pixels differ; bounds={bbox}", file=sys.stderr)
     print(f"Evidence: {output_dir / 'diff.png'}", file=sys.stderr)
     return 1

@@ -1,6 +1,6 @@
 Time tracking history
 
-With B2, first 2 runs
+With B2, first 2 runs. Beebium gives different answers because different default machine configuration. Beebium actually produces a better seed, so happy with that as the automated testing choice.
 
 Github version from 2023:
 26.38, 43.34
