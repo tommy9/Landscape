@@ -858,12 +858,12 @@ JMP drawlandscape
         \ PROC3dd(85,X%+1,Y%+1,2)
         INC Xcoord
         INC Ycoord
-        LDA #2: STA side1
+        LDA #2: STA corner
         JSR PROC3dd
 
         \ PROC3dm(85,2) : will use X%,Y%+1
         DEC Xcoord
-        LDA #2: STA corner
+        LDA #2: STA side1
         JSR PROC3dm
 
         RTS
