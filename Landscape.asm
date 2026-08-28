@@ -774,7 +774,6 @@ JMP drawlandscape
         JSR PROC3dd
 
         \ PROC3dm(85,3) : will use X%,Y%
-        DEC Xcoord
         LDA #85: STA plottype
         LDA #3: STA side1
         JSR PROC3dm
@@ -786,7 +785,6 @@ JMP drawlandscape
         JSR PROC3dd
 
         \ PROC3dm(85,2) : will use X%,Y%+1
-        DEC Xcoord
         LDA #2: STA side1
         JMP PROC3dm
     }
@@ -813,14 +811,10 @@ JMP drawlandscape
         JSR PROC3dd
 
         \ PROC3dm(85,2) : will use X%,Y%+1
-        DEC Xcoord
-        INC Ycoord
         LDA #2: STA side1
         JSR PROC3dm
 
         \ PROC3dm(85,1) : will use X%+1,Y%
-        INC Xcoord
-        DEC Ycoord
         LDA #1: STA side1
         JMP PROC3dm
     }
@@ -840,13 +834,11 @@ JMP drawlandscape
         JSR PROC3dd
 
         \ PROC3dm(85,3) : will use X%,Y%
-        DEC Xcoord
         LDA #85: STA plottype
         LDA #3: STA side1
         JSR PROC3dm
 
         \ PROC3dm(85,1) : will use X%+1,Y%
-        INC Xcoord
         LDA #1: STA side1
         JMP PROC3dm
     }
@@ -874,12 +866,10 @@ JMP drawlandscape
         JSR PROC3dd
 
         \ PROC3dm(85,1) : will use X%+1,Y%
-        INC Xcoord
         LDA #1: STA side1
         JSR PROC3dm
 
         \ PROC3dm(85,0) : will use X%,Y%
-        DEC Xcoord
         LDA #0: STA side1
         JMP PROC3dm
     }
@@ -909,13 +899,11 @@ JMP drawlandscape
         JSR PROC3dd
 
         \ PROC3dm(85,0) : will use X%,Y%
-        DEC Ycoord
         LDA #85: STA plottype
         LDA #0: STA side1
         JSR PROC3dm
 
         \ PROC3dm(85,2) : will use X%,Y%+1
-        INC Ycoord
         LDA #2: STA side1
         JMP PROC3dm
     }
@@ -930,8 +918,6 @@ JMP drawlandscape
     .FNbaaa
     {
         \ PROC3dm(4,3)
-        LDA cx: STA Xcoord
-        LDA cy: STA Ycoord
         LDA #4: STA plottype
         LDA #3: STA side1
         JSR PROC3dm
@@ -975,14 +961,11 @@ JMP drawlandscape
         JSR PROC3dd
 
         \ PROC3dm(85,2)
-        INC Ycoord
-        DEC Xcoord
         LDA #85: STA plottype
         LDA #2: STA side1
         JSR PROC3dm
 
         \ PROC3dm(85,0)
-        DEC Ycoord
         LDA #0: STA side1
         JMP PROC3dm
     }
@@ -1022,14 +1005,11 @@ JMP drawlandscape
         JSR PROC3dd
 
         \ PROC3dm(85,1)
-        INC Xcoord
-        DEC Ycoord
         LDA #85: STA plottype
         LDA #1: STA side1
         JSR PROC3dm
 
         \ PROC3dm(85,3)
-        DEC Xcoord
         LDA #3: STA side1
         JMP PROC3dm
     }

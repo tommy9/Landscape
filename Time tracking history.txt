@@ -19,3 +19,7 @@ Lookup for scaling x/y coordinate by horizontal scale
 
 Minor tail call optimisations (JSR x:RTS -> JMP x)
 7.15, 23,47
+
+Misc tiny adjustments
+7.10, 23.43
+
