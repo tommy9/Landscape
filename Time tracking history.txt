@@ -1,6 +1,7 @@
 Time tracking history
 
 With B2, first 2 runs. Beebium gives different answers because different default machine configuration. Beebium actually produces a better seed, so happy with that as the automated testing choice.
+Timing doesn't include loading assembly or switching mode at the start.
 
 Github version from 2023:
 26.38, 43.34
@@ -23,3 +24,5 @@ Minor tail call optimisations (JSR x:RTS -> JMP x)
 Misc tiny adjustments
 7.10, 23.43
 
+Progress bar instead of printing numbers
+6.68, 23.00

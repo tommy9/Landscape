@@ -59,8 +59,6 @@ JMP drawlandscape
     \ - address of array of dx values (1 byte per fault)
     \ - address of array of dy values (1 byte per fault)
     \ - address of array of delta values (1 byte per fault)
-    \ - address of lut_hscale array (2 bytes per grid vertex)
-    \ - address of lut_2hscale array (2 bytes per grid vertex)
     
     \ numfaults
     LDA &0601 \ just the low byte as numfaults is 8 bit
@@ -100,16 +98,15 @@ JMP drawlandscape
     LDA &0614
     STA delta+1
 
-    \ lutHscaleAddr
-    LDA &0616
+    \ Row buffers and lookup tables live in the machine-code workspace.
+    LDA #LO(lutHscale)
     STA lutHscaleAddr
-    LDA &0617
+    LDA #HI(lutHscale)
     STA lutHscaleAddr+1
 
-    \ lut2HscaleAddr
-    LDA &0619
+    LDA #LO(lut2Hscale)
     STA lut2HscaleAddr
-    LDA &061A
+    LDA #HI(lut2Hscale)
     STA lut2HscaleAddr+1
 
     JMP calchscale \ skip over local variable memory allocation
@@ -407,24 +404,14 @@ JMP drawlandscape
     }
 .drawlandscape
 {
-    .saveParams
-    {
-        \ TEMPORARY: take in 2 addresses from BASIC
-        \ keep cx from memory and reuse it
-
-        \ process parameters
-        \ low X resultsAddr
-        LDA &0601
-        STA resultsAddr1
-        LDA &0602
-        STA resultsAddr1+1
-
-        \ high X resultsAddr
-        LDA &0604
-        STA resultsAddr2
-        LDA &0605
-        STA resultsAddr2+1
-    }
+    LDA #LO(rowBuffer1)
+    STA resultsAddr1
+    LDA #HI(rowBuffer1)
+    STA resultsAddr1+1
+    LDA #LO(rowBuffer2)
+    STA resultsAddr2
+    LDA #HI(rowBuffer2)
+    STA resultsAddr2+1
 
 
     JMP setuptemp   \ skip over memory allocation
@@ -1420,9 +1407,22 @@ JMP drawlandscape
 }
 .end
 
+\ Runtime workspace is not saved to disc. Each table holds gridsize + 1
+\ 16-bit entries; the current BASIC front end fixes gridsize at 40.
+maxGridSize = 40
+tableBytes = (maxGridSize + 1) * 2
+rowBuffer1 = end
+rowBuffer2 = rowBuffer1 + tableBytes
+lutHscale = rowBuffer2 + tableBytes
+lut2Hscale = lutHscale + tableBytes
+workspaceEnd = lut2Hscale + tableBytes
+
+ASSERT workspaceEnd <= &3000
+
 SAVE "CORE", start, end
 PUTBASIC "BeebEmbiggened.bbc", "LAND"
 PUTFILE "!Boot.txt", "!Boot", &FFFFFF
 PRINT "End of zero page usage ", ~zpEnd
 PRINT "Call ASMINT=", ~start
 PRINT "Call MAKEGRID=", ~callDrawing
+PRINT "Runtime workspace end ", ~workspaceEnd

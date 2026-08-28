@@ -1,6 +1,8 @@
 ASMINIT=&2000
 MAKEGRID=&2003
-MODE 1:VDU 23;8202;0;0;0;
+MODE 1
+VDU 19,3,4;0;
+VDU 23;8202;0;0;0;
 PROCinit
 PROCfaults(faults%)
 PROCdraw
@@ -13,15 +15,12 @@ REM: RND(ABS TIME)
 R%=TIME
 S%=40
 faults%=50
-DIM l0 S%*2+1:DIM l1 S%*2+1
 DIM fac1 faults%*2: DIM fac2 faults%*2
 DIM dx faults%:DIM dy faults%:DIM ft faults%
-DIM lut1 S%*2+1: DIM lut2 S%*2+1
-VDU 19,3,4;0;
 ENDPROC
 DEFPROCfaults(num%)
 FOR F%=0 TO num%-1
-PRINT TAB(0,0);num%-F%;" "
+F%?&5900=255
 p1x%=RND(S%):p1y%=RND(S%)
 p2x%=RND(S%):p2y%=RND(S%)
 dx%=p2x%-p1x%:dy%=p2y%-p1y%
@@ -30,10 +29,10 @@ fac1?(F%*2)=tmp%AND&FF:fac1?(F%*2+1)=(tmp%AND&FF00)DIV&FF
 dx?F%=dx%:dy?F%=dy%
 ft?F%=RND MOD256
 NEXT
-CALL ASMINIT,?faults%,?S%,?fac1,?fac2,?dx,?dy,?ft,?lut1,?lut2
+CALL ASMINIT,?faults%,?S%,?fac1,?fac2,?dx,?dy,?ft
 ENDPROC
 ENDPROC
 DEFPROCdraw
 CLS
-CALL MAKEGRID,?l0,?l1
+CALL MAKEGRID
 ENDPROC
