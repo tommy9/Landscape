@@ -42,7 +42,7 @@ adjusty = dy
 
 zpEnd = P%
 
-ORG &2100
+ORG &2400
 
 .start
 JMP setup
