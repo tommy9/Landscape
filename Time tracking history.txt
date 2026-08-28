@@ -26,3 +26,5 @@ Misc tiny adjustments
 
 Progress bar instead of printing numbers
 6.68, 23.00
+
+Basically almost all time is spent drawing triangles now, so unless want to tackle that, there is diminishing returns to be had.

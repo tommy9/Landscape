@@ -1,4 +1,5 @@
 oswrch=&FFEE
+; oswrch=&2006 ; straight to RTS, to test time spend in drawing
 
 \\ Define some zp locations
 ORG &70
@@ -48,6 +49,8 @@ ORG &2000
 JMP setup
 .callDrawing
 JMP drawlandscape
+.testing
+RTS
 .setup
 {
     \ Load data from CALL parameters - called once at start of program
