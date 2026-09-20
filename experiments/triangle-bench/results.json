@@ -1,0 +1,300 @@
+{
+  "upstream_revision": "d7f03fe69a3f892440e985f063444492a4702a29",
+  "repeats": 1000,
+  "cases": {
+    "coast_4x6": {
+      "vertices": [
+        [
+          40,
+          80
+        ],
+        [
+          44,
+          82
+        ],
+        [
+          41,
+          86
+        ]
+      ],
+      "box": [
+        40,
+        79,
+        44,
+        87
+      ],
+      "methods": {
+        "mos_mode1": {
+          "ticks": 664,
+          "microseconds_per_triangle": 6640.0,
+          "nonzero_pixels": 17
+        },
+        "mos_mode5": {
+          "ticks": 670,
+          "microseconds_per_triangle": 6700.0,
+          "nonzero_pixels": 17
+        },
+        "xor_original_window": {
+          "ticks": 3503,
+          "microseconds_per_triangle": 35030.0,
+          "nonzero_pixels": 14
+        },
+        "xor_bounded": {
+          "ticks": 86,
+          "microseconds_per_triangle": 860.0,
+          "nonzero_pixels": 14
+        },
+        "basic_mode1": {
+          "ticks": 1062,
+          "microseconds_per_triangle": 10620.0,
+          "nonzero_pixels": 17
+        }
+      }
+    },
+    "grid40_flat_8x2": {
+      "vertices": [
+        [
+          40,
+          80
+        ],
+        [
+          44,
+          82
+        ],
+        [
+          36,
+          82
+        ]
+      ],
+      "box": [
+        36,
+        79,
+        44,
+        83
+      ],
+      "methods": {
+        "mos_mode1": {
+          "ticks": 520,
+          "microseconds_per_triangle": 5200.0,
+          "nonzero_pixels": 15
+        },
+        "mos_mode5": {
+          "ticks": 525,
+          "microseconds_per_triangle": 5250.0,
+          "nonzero_pixels": 15
+        },
+        "xor_original_window": {
+          "ticks": 3501,
+          "microseconds_per_triangle": 35010.0,
+          "nonzero_pixels": 8
+        },
+        "xor_bounded": {
+          "ticks": 85,
+          "microseconds_per_triangle": 850.0,
+          "nonzero_pixels": 8
+        },
+        "basic_mode1": {
+          "ticks": 918,
+          "microseconds_per_triangle": 9180.0,
+          "nonzero_pixels": 15
+        }
+      }
+    },
+    "grid40_slope_8x12": {
+      "vertices": [
+        [
+          40,
+          80
+        ],
+        [
+          44,
+          92
+        ],
+        [
+          36,
+          86
+        ]
+      ],
+      "box": [
+        36,
+        79,
+        44,
+        93
+      ],
+      "methods": {
+        "mos_mode1": {
+          "ticks": 993,
+          "microseconds_per_triangle": 9930.0,
+          "nonzero_pixels": 49
+        },
+        "mos_mode5": {
+          "ticks": 1000,
+          "microseconds_per_triangle": 10000.0,
+          "nonzero_pixels": 49
+        },
+        "xor_original_window": {
+          "ticks": 3526,
+          "microseconds_per_triangle": 35260.0,
+          "nonzero_pixels": 33
+        },
+        "xor_bounded": {
+          "ticks": 131,
+          "microseconds_per_triangle": 1310.0,
+          "nonzero_pixels": 33
+        },
+        "basic_mode1": {
+          "ticks": 1391,
+          "microseconds_per_triangle": 13910.0,
+          "nonzero_pixels": 49
+        }
+      }
+    },
+    "grid40_steep_8x32": {
+      "vertices": [
+        [
+          40,
+          80
+        ],
+        [
+          44,
+          112
+        ],
+        [
+          36,
+          90
+        ]
+      ],
+      "box": [
+        36,
+        79,
+        44,
+        113
+      ],
+      "methods": {
+        "mos_mode1": {
+          "ticks": 1876,
+          "microseconds_per_triangle": 18760.0,
+          "nonzero_pixels": 119
+        },
+        "mos_mode5": {
+          "ticks": 1890,
+          "microseconds_per_triangle": 18900.0,
+          "nonzero_pixels": 119
+        },
+        "xor_original_window": {
+          "ticks": 3549,
+          "microseconds_per_triangle": 35490.0,
+          "nonzero_pixels": 74
+        },
+        "xor_bounded": {
+          "ticks": 198,
+          "microseconds_per_triangle": 1980.0,
+          "nonzero_pixels": 74
+        },
+        "basic_mode1": {
+          "ticks": 2273,
+          "microseconds_per_triangle": 22730.0,
+          "nonzero_pixels": 119
+        }
+      }
+    },
+    "grid20_flat_16x4": {
+      "vertices": [
+        [
+          40,
+          80
+        ],
+        [
+          48,
+          84
+        ],
+        [
+          32,
+          84
+        ]
+      ],
+      "box": [
+        32,
+        79,
+        48,
+        85
+      ],
+      "methods": {
+        "mos_mode1": {
+          "ticks": 645,
+          "microseconds_per_triangle": 6450.0,
+          "nonzero_pixels": 45
+        },
+        "mos_mode5": {
+          "ticks": 650,
+          "microseconds_per_triangle": 6500.0,
+          "nonzero_pixels": 45
+        },
+        "xor_original_window": {
+          "ticks": 3521,
+          "microseconds_per_triangle": 35210.0,
+          "nonzero_pixels": 32
+        },
+        "xor_bounded": {
+          "ticks": 123,
+          "microseconds_per_triangle": 1230.0,
+          "nonzero_pixels": 32
+        },
+        "basic_mode1": {
+          "ticks": 1042,
+          "microseconds_per_triangle": 10420.0,
+          "nonzero_pixels": 45
+        }
+      }
+    },
+    "grid10_flat_32x8": {
+      "vertices": [
+        [
+          48,
+          80
+        ],
+        [
+          64,
+          88
+        ],
+        [
+          32,
+          88
+        ]
+      ],
+      "box": [
+        32,
+        79,
+        64,
+        89
+      ],
+      "methods": {
+        "mos_mode1": {
+          "ticks": 921,
+          "microseconds_per_triangle": 9210.0,
+          "nonzero_pixels": 153
+        },
+        "mos_mode5": {
+          "ticks": 928,
+          "microseconds_per_triangle": 9280.0,
+          "nonzero_pixels": 153
+        },
+        "xor_original_window": {
+          "ticks": 3564,
+          "microseconds_per_triangle": 35640.0,
+          "nonzero_pixels": 128
+        },
+        "xor_bounded": {
+          "ticks": 218,
+          "microseconds_per_triangle": 2180.0,
+          "nonzero_pixels": 128
+        },
+        "basic_mode1": {
+          "ticks": 1320,
+          "microseconds_per_triangle": 13200.0,
+          "nonzero_pixels": 153
+        }
+      }
+    }
+  }
+}

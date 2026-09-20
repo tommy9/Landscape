@@ -1,0 +1,775 @@
+{
+  "upstream_revision": "d7f03fe69a3f892440e985f063444492a4702a29",
+  "repeats": 200,
+  "unit": "whole 9-cell patch",
+  "cases": {
+    "grid40_3x3": {
+      "cells": [
+        {
+          "corners": [
+            [
+              80,
+              80
+            ],
+            [
+              84,
+              82
+            ],
+            [
+              80,
+              84
+            ],
+            [
+              76,
+              82
+            ]
+          ],
+          "colour": 1
+        },
+        {
+          "corners": [
+            [
+              76,
+              82
+            ],
+            [
+              80,
+              84
+            ],
+            [
+              76,
+              86
+            ],
+            [
+              72,
+              84
+            ]
+          ],
+          "colour": 2
+        },
+        {
+          "corners": [
+            [
+              72,
+              84
+            ],
+            [
+              76,
+              86
+            ],
+            [
+              72,
+              88
+            ],
+            [
+              68,
+              86
+            ]
+          ],
+          "colour": 1
+        },
+        {
+          "corners": [
+            [
+              84,
+              82
+            ],
+            [
+              88,
+              84
+            ],
+            [
+              84,
+              86
+            ],
+            [
+              80,
+              84
+            ]
+          ],
+          "colour": 2
+        },
+        {
+          "corners": [
+            [
+              80,
+              84
+            ],
+            [
+              84,
+              86
+            ],
+            [
+              80,
+              88
+            ],
+            [
+              76,
+              86
+            ]
+          ],
+          "colour": 1
+        },
+        {
+          "corners": [
+            [
+              76,
+              86
+            ],
+            [
+              80,
+              88
+            ],
+            [
+              76,
+              90
+            ],
+            [
+              72,
+              88
+            ]
+          ],
+          "colour": 2
+        },
+        {
+          "corners": [
+            [
+              88,
+              84
+            ],
+            [
+              92,
+              86
+            ],
+            [
+              88,
+              88
+            ],
+            [
+              84,
+              86
+            ]
+          ],
+          "colour": 1
+        },
+        {
+          "corners": [
+            [
+              84,
+              86
+            ],
+            [
+              88,
+              88
+            ],
+            [
+              84,
+              90
+            ],
+            [
+              80,
+              88
+            ]
+          ],
+          "colour": 2
+        },
+        {
+          "corners": [
+            [
+              80,
+              88
+            ],
+            [
+              84,
+              90
+            ],
+            [
+              80,
+              92
+            ],
+            [
+              76,
+              90
+            ]
+          ],
+          "colour": 1
+        }
+      ],
+      "unique_edges": 24,
+      "unmerged_edges": 36,
+      "mos_triangles": 18,
+      "native_span": [
+        24,
+        12
+      ],
+      "box": [
+        68,
+        79,
+        92,
+        93
+      ],
+      "sweep_bytes": 105,
+      "methods": {
+        "mos_mode1": {
+          "ticks": 1636,
+          "microseconds_per_patch": 81800.0,
+          "nonzero_pixels": 157
+        },
+        "mos_mode5": {
+          "ticks": 1647,
+          "microseconds_per_patch": 82350.0,
+          "nonzero_pixels": 157
+        },
+        "xor_original_window": {
+          "ticks": 808,
+          "microseconds_per_patch": 40400.0,
+          "nonzero_pixels": 144
+        },
+        "xor_bounded": {
+          "ticks": 140,
+          "microseconds_per_patch": 7000.0,
+          "nonzero_pixels": 144
+        },
+        "xor_unmerged": {
+          "ticks": 199,
+          "microseconds_per_patch": 9950.0,
+          "nonzero_pixels": 144
+        }
+      },
+      "colour_counts": {
+        "mos_mode1": {
+          "red": 89,
+          "yellow": 68
+        },
+        "mos_mode5": {
+          "red": 89,
+          "yellow": 68
+        },
+        "xor_original_window": {
+          "red": 80,
+          "yellow": 64
+        },
+        "xor_bounded": {
+          "red": 80,
+          "yellow": 64
+        },
+        "xor_unmerged": {
+          "red": 80,
+          "yellow": 64
+        }
+      }
+    },
+    "grid20_3x3": {
+      "cells": [
+        {
+          "corners": [
+            [
+              80,
+              80
+            ],
+            [
+              88,
+              84
+            ],
+            [
+              80,
+              88
+            ],
+            [
+              72,
+              84
+            ]
+          ],
+          "colour": 1
+        },
+        {
+          "corners": [
+            [
+              72,
+              84
+            ],
+            [
+              80,
+              88
+            ],
+            [
+              72,
+              92
+            ],
+            [
+              64,
+              88
+            ]
+          ],
+          "colour": 2
+        },
+        {
+          "corners": [
+            [
+              64,
+              88
+            ],
+            [
+              72,
+              92
+            ],
+            [
+              64,
+              96
+            ],
+            [
+              56,
+              92
+            ]
+          ],
+          "colour": 1
+        },
+        {
+          "corners": [
+            [
+              88,
+              84
+            ],
+            [
+              96,
+              88
+            ],
+            [
+              88,
+              92
+            ],
+            [
+              80,
+              88
+            ]
+          ],
+          "colour": 2
+        },
+        {
+          "corners": [
+            [
+              80,
+              88
+            ],
+            [
+              88,
+              92
+            ],
+            [
+              80,
+              96
+            ],
+            [
+              72,
+              92
+            ]
+          ],
+          "colour": 1
+        },
+        {
+          "corners": [
+            [
+              72,
+              92
+            ],
+            [
+              80,
+              96
+            ],
+            [
+              72,
+              100
+            ],
+            [
+              64,
+              96
+            ]
+          ],
+          "colour": 2
+        },
+        {
+          "corners": [
+            [
+              96,
+              88
+            ],
+            [
+              104,
+              92
+            ],
+            [
+              96,
+              96
+            ],
+            [
+              88,
+              92
+            ]
+          ],
+          "colour": 1
+        },
+        {
+          "corners": [
+            [
+              88,
+              92
+            ],
+            [
+              96,
+              96
+            ],
+            [
+              88,
+              100
+            ],
+            [
+              80,
+              96
+            ]
+          ],
+          "colour": 2
+        },
+        {
+          "corners": [
+            [
+              80,
+              96
+            ],
+            [
+              88,
+              100
+            ],
+            [
+              80,
+              104
+            ],
+            [
+              72,
+              100
+            ]
+          ],
+          "colour": 1
+        }
+      ],
+      "unique_edges": 24,
+      "unmerged_edges": 36,
+      "mos_triangles": 18,
+      "native_span": [
+        48,
+        24
+      ],
+      "box": [
+        56,
+        79,
+        104,
+        105
+      ],
+      "sweep_bytes": 351,
+      "methods": {
+        "mos_mode1": {
+          "ticks": 2084,
+          "microseconds_per_patch": 104200.0,
+          "nonzero_pixels": 601
+        },
+        "mos_mode5": {
+          "ticks": 2097,
+          "microseconds_per_patch": 104850.0,
+          "nonzero_pixels": 601
+        },
+        "xor_original_window": {
+          "ticks": 843,
+          "microseconds_per_patch": 42150.0,
+          "nonzero_pixels": 576
+        },
+        "xor_bounded": {
+          "ticks": 213,
+          "microseconds_per_patch": 10650.0,
+          "nonzero_pixels": 576
+        },
+        "xor_unmerged": {
+          "ticks": 290,
+          "microseconds_per_patch": 14500.0,
+          "nonzero_pixels": 576
+        }
+      },
+      "colour_counts": {
+        "mos_mode1": {
+          "red": 337,
+          "yellow": 264
+        },
+        "mos_mode5": {
+          "red": 337,
+          "yellow": 264
+        },
+        "xor_original_window": {
+          "red": 320,
+          "yellow": 256
+        },
+        "xor_bounded": {
+          "red": 320,
+          "yellow": 256
+        },
+        "xor_unmerged": {
+          "red": 320,
+          "yellow": 256
+        }
+      }
+    },
+    "grid10_3x3": {
+      "cells": [
+        {
+          "corners": [
+            [
+              80,
+              80
+            ],
+            [
+              96,
+              88
+            ],
+            [
+              80,
+              96
+            ],
+            [
+              64,
+              88
+            ]
+          ],
+          "colour": 1
+        },
+        {
+          "corners": [
+            [
+              64,
+              88
+            ],
+            [
+              80,
+              96
+            ],
+            [
+              64,
+              104
+            ],
+            [
+              48,
+              96
+            ]
+          ],
+          "colour": 2
+        },
+        {
+          "corners": [
+            [
+              48,
+              96
+            ],
+            [
+              64,
+              104
+            ],
+            [
+              48,
+              112
+            ],
+            [
+              32,
+              104
+            ]
+          ],
+          "colour": 1
+        },
+        {
+          "corners": [
+            [
+              96,
+              88
+            ],
+            [
+              112,
+              96
+            ],
+            [
+              96,
+              104
+            ],
+            [
+              80,
+              96
+            ]
+          ],
+          "colour": 2
+        },
+        {
+          "corners": [
+            [
+              80,
+              96
+            ],
+            [
+              96,
+              104
+            ],
+            [
+              80,
+              112
+            ],
+            [
+              64,
+              104
+            ]
+          ],
+          "colour": 1
+        },
+        {
+          "corners": [
+            [
+              64,
+              104
+            ],
+            [
+              80,
+              112
+            ],
+            [
+              64,
+              120
+            ],
+            [
+              48,
+              112
+            ]
+          ],
+          "colour": 2
+        },
+        {
+          "corners": [
+            [
+              112,
+              96
+            ],
+            [
+              128,
+              104
+            ],
+            [
+              112,
+              112
+            ],
+            [
+              96,
+              104
+            ]
+          ],
+          "colour": 1
+        },
+        {
+          "corners": [
+            [
+              96,
+              104
+            ],
+            [
+              112,
+              112
+            ],
+            [
+              96,
+              120
+            ],
+            [
+              80,
+              112
+            ]
+          ],
+          "colour": 2
+        },
+        {
+          "corners": [
+            [
+              80,
+              112
+            ],
+            [
+              96,
+              120
+            ],
+            [
+              80,
+              128
+            ],
+            [
+              64,
+              120
+            ]
+          ],
+          "colour": 1
+        }
+      ],
+      "unique_edges": 24,
+      "unmerged_edges": 36,
+      "mos_triangles": 18,
+      "native_span": [
+        96,
+        48
+      ],
+      "box": [
+        32,
+        79,
+        128,
+        129
+      ],
+      "sweep_bytes": 1275,
+      "methods": {
+        "mos_mode1": {
+          "ticks": 3081,
+          "microseconds_per_patch": 154050.0,
+          "nonzero_pixels": 2353
+        },
+        "mos_mode5": {
+          "ticks": 3099,
+          "microseconds_per_patch": 154950.0,
+          "nonzero_pixels": 2353
+        },
+        "xor_original_window": {
+          "ticks": 913,
+          "microseconds_per_patch": 45650.0,
+          "nonzero_pixels": 2304
+        },
+        "xor_bounded": {
+          "ticks": 423,
+          "microseconds_per_patch": 21150.0,
+          "nonzero_pixels": 2304
+        },
+        "xor_unmerged": {
+          "ticks": 535,
+          "microseconds_per_patch": 26750.0,
+          "nonzero_pixels": 2304
+        }
+      },
+      "colour_counts": {
+        "mos_mode1": {
+          "red": 1313,
+          "yellow": 1040
+        },
+        "mos_mode5": {
+          "red": 1313,
+          "yellow": 1040
+        },
+        "xor_original_window": {
+          "red": 1280,
+          "yellow": 1024
+        },
+        "xor_bounded": {
+          "red": 1280,
+          "yellow": 1024
+        },
+        "xor_unmerged": {
+          "red": 1280,
+          "yellow": 1024
+        }
+      }
+    }
+  }
+}
